@@ -65,6 +65,18 @@ export type Survey = {
   updated_at: string
 }
 
+export type Question = {
+  id: string
+  survey_id: string
+  type: string
+  title: string
+  options: string[]
+  is_required: number
+  sort_order: number
+}
+
+export type SurveyWithQuestions = Survey & { questions: Question[] }
+
 export async function getSurveys(): Promise<Survey[]> {
   const response = await fetch('/api/surveys')
   if (!response.ok) return []
@@ -72,10 +84,29 @@ export async function getSurveys(): Promise<Survey[]> {
   return data.surveys
 }
 
+export async function getSurvey(id: string): Promise<SurveyWithQuestions | null> {
+  const response = await fetch(`/api/surveys/${id}`)
+  if (!response.ok) return null
+  const data = (await response.json()) as { survey: SurveyWithQuestions }
+  return data.survey
+}
+
 export async function createSurvey(): Promise<Survey | null> {
   const response = await fetch('/api/surveys', { method: 'POST' })
   if (!response.ok) return null
   return (await response.json()) as Survey
+}
+
+export async function updateSurvey(
+  id: string,
+  data: Partial<{ title: string; brand_color: string; logo_url: string; is_published: boolean }>,
+): Promise<boolean> {
+  const response = await fetch(`/api/surveys/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return response.ok
 }
 
 export async function deleteSurvey(id: string): Promise<boolean> {
