@@ -146,3 +146,32 @@ export async function deleteQuestion(surveyId: string, questionId: string): Prom
   })
   return response.ok
 }
+
+export async function reorderQuestions(surveyId: string, questionIds: string[]): Promise<boolean> {
+  const response = await fetch(`/api/surveys/${surveyId}/questions/reorder`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ questionIds }),
+  })
+  return response.ok
+}
+
+// Public API
+export async function getPublicSurvey(surveyId: string): Promise<SurveyWithQuestions | null> {
+  const response = await fetch(`/api/public/surveys/${surveyId}`)
+  if (!response.ok) return null
+  const data = await response.json()
+  return data.survey as SurveyWithQuestions
+}
+
+export async function submitSurveyResponse(
+  surveyId: string,
+  answers: { questionId: string; value: string }[],
+): Promise<boolean> {
+  const response = await fetch(`/api/public/surveys/${surveyId}/respond`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers }),
+  })
+  return response.ok
+}

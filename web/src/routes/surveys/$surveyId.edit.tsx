@@ -1,3 +1,18 @@
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { BrandingPanel } from '../../components/BrandingPanel'
@@ -7,6 +22,7 @@ import {
   deleteQuestion,
   getSurvey,
   type Question,
+  reorderQuestions,
   type SurveyWithQuestions,
   updateQuestion,
   updateSurvey,
@@ -23,16 +39,25 @@ function EditSurveyPage() {
 
   const [survey, setSurvey] = useState<SurveyWithQuestions | null>(null)
   const [loading, setLoading] = useState(true)
+  const [liveTitle, setLiveTitle] = useState('')
   const [liveBrandColor, setLiveBrandColor] = useState('#3b82f6')
   const [liveLogoUrl, setLiveLogoUrl] = useState('')
   const [isPublishing, setIsPublishing] = useState(false)
   const [isAddingQuestion, setIsAddingQuestion] = useState(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  )
 
   useEffect(() => {
     const fetchIt = async () => {
       const data = await getSurvey(surveyId)
       if (data) {
         setSurvey(data)
+        setLiveTitle(data.title)
         setLiveBrandColor(data.brand_color)
         setLiveLogoUrl(data.logo_url)
       }
@@ -42,6 +67,39 @@ function EditSurveyPage() {
       fetchIt()
     }
   }, [surveyId, user])
+
+  const handleTitleBlur = async () => {
+    if (!survey || liveTitle === survey.title) return
+    const success = await updateSurvey(survey.id, { title: liveTitle })
+    if (success) {
+      setSurvey({ ...survey, title: liveTitle })
+    } else {
+      setLiveTitle(survey.title) // revert on failure
+    }
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!survey || !over) return
+
+    if (active.id !== over.id) {
+      const oldIndex = survey.questions.findIndex((q) => q.id === active.id)
+      const newIndex = survey.questions.findIndex((q) => q.id === over.id)
+
+      const newQuestions = arrayMove(survey.questions, oldIndex, newIndex)
+
+      // Update local state immediately
+      setSurvey({ ...survey, questions: newQuestions })
+
+      // Call API
+      const questionIds = newQuestions.map((q) => q.id)
+      const success = await reorderQuestions(survey.id, questionIds)
+      if (!success) {
+        // Revert on failure
+        setSurvey({ ...survey, questions: survey.questions })
+      }
+    }
+  }
 
   const handleSaveBranding = async (data: { brand_color: string; logo_url: string }) => {
     if (!survey) return
@@ -140,8 +198,8 @@ function EditSurveyPage() {
       {/* Left Panel: Builder Controls */}
       <div className="w-full lg:w-[400px] border-r border-border/80 bg-white/50 backdrop-blur-xl p-6 flex flex-col gap-6 overflow-y-auto">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-text line-clamp-1" title={survey.title}>
-            {survey.title}
+          <h1 className="text-2xl font-extrabold text-text line-clamp-1" title={liveTitle}>
+            {liveTitle}
           </h1>
         </div>
 
@@ -297,7 +355,14 @@ function EditSurveyPage() {
                 </div>
               )}
 
-              <h1 className="text-4xl font-extrabold text-text mb-4">{survey.title}</h1>
+              <input
+                type="text"
+                value={liveTitle}
+                onChange={(e) => setLiveTitle(e.target.value)}
+                onBlur={handleTitleBlur}
+                className="w-full text-4xl font-extrabold text-text mb-4 bg-transparent border-0 border-b-2 border-transparent hover:border-border/50 focus:border-brand focus:outline-none focus:ring-0 px-0 pb-1 transition-colors"
+                placeholder="Survey Title"
+              />
 
               <div className="space-y-6 mt-12">
                 {survey.questions.length === 0 ? (
@@ -305,14 +370,25 @@ function EditSurveyPage() {
                     No questions yet. Add one from the panel!
                   </div>
                 ) : (
-                  survey.questions.map((question) => (
-                    <QuestionEditor
-                      key={question.id}
-                      question={question}
-                      onChange={(updates) => handleUpdateQuestion(question.id, updates)}
-                      onDelete={() => handleDeleteQuestion(question.id)}
-                    />
-                  ))
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={survey.questions.map((q) => q.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {survey.questions.map((question) => (
+                        <QuestionEditor
+                          key={question.id}
+                          question={question}
+                          onChange={(updates) => handleUpdateQuestion(question.id, updates)}
+                          onDelete={() => handleDeleteQuestion(question.id)}
+                        />
+                      ))}
+                    </SortableContext>
+                  </DndContext>
                 )}
               </div>
 

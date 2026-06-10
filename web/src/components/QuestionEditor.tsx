@@ -1,3 +1,5 @@
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useState } from 'react'
 import type { Question } from '../lib/api'
 
@@ -8,6 +10,17 @@ type QuestionEditorProps = {
 }
 
 export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: question.id,
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
+  }
+
   const [localTitle, setLocalTitle] = useState(question.title)
 
   const handleTitleBlur = () => {
@@ -33,8 +46,30 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
   }
 
   return (
-    <div className="group relative bg-white border border-border/40 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="group relative bg-white border border-border/40 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all"
+    >
       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className="p-1.5 text-text-muted hover:text-text hover:bg-border/30 rounded-lg transition-colors cursor-grab active:cursor-grabbing"
+          title="Drag to reorder"
+        >
+          <svg
+            aria-hidden="true"
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9h8M8 15h8" />
+          </svg>
+        </button>
+        <div className="w-px h-5 bg-border/50 mx-1" />
         <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer">
           <input
             type="checkbox"
@@ -73,7 +108,7 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
           value={localTitle}
           onChange={(e) => setLocalTitle(e.target.value)}
           onBlur={handleTitleBlur}
-          className="w-full text-lg font-bold text-text bg-transparent border-0 border-b-2 border-transparent hover:border-border/50 focus:border-brand focus:ring-0 px-0 pb-1 mb-4"
+          className="w-full text-lg font-bold text-text bg-transparent border-0 border-b-2 border-transparent hover:border-border/50 focus:border-brand focus:outline-none focus:ring-0 px-0 pb-1 mb-4"
           placeholder="Question Title"
         />
 
@@ -115,7 +150,7 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
                   type="text"
                   defaultValue={opt}
                   onBlur={(e) => handleUpdateOption(idx, e.target.value)}
-                  className="flex-1 bg-transparent border-0 border-b border-transparent hover:border-border/50 focus:border-brand focus:ring-0 px-0 py-1"
+                  className="flex-1 bg-transparent border-0 border-b border-transparent hover:border-border/50 focus:border-brand focus:outline-none focus:ring-0 px-0 py-1"
                   placeholder={`Option ${idx + 1}`}
                 />
                 {question.options.length > 1 && (
