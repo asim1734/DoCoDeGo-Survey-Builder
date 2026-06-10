@@ -113,3 +113,36 @@ export async function deleteSurvey(id: string): Promise<boolean> {
   const response = await fetch(`/api/surveys/${id}`, { method: 'DELETE' })
   return response.ok
 }
+
+export async function createQuestion(
+  surveyId: string,
+  data: Partial<Question>,
+): Promise<Question | null> {
+  const response = await fetch(`/api/surveys/${surveyId}/questions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!response.ok) return null
+  return (await response.json()) as Question
+}
+
+export async function updateQuestion(
+  surveyId: string,
+  questionId: string,
+  data: Partial<Question>,
+): Promise<boolean> {
+  const response = await fetch(`/api/surveys/${surveyId}/questions/${questionId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return response.ok
+}
+
+export async function deleteQuestion(surveyId: string, questionId: string): Promise<boolean> {
+  const response = await fetch(`/api/surveys/${surveyId}/questions/${questionId}`, {
+    method: 'DELETE',
+  })
+  return response.ok
+}
