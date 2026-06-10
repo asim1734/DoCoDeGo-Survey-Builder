@@ -53,3 +53,32 @@ export async function getCurrentUser(): Promise<User | null> {
   const data = (await response.json()) as { user: User | null }
   return data.user
 }
+
+export type Survey = {
+  id: string
+  user_id: string
+  title: string
+  brand_color: string
+  logo_url: string
+  is_published: number
+  created_at: string
+  updated_at: string
+}
+
+export async function getSurveys(): Promise<Survey[]> {
+  const response = await fetch('/api/surveys')
+  if (!response.ok) return []
+  const data = (await response.json()) as { surveys: Survey[] }
+  return data.surveys
+}
+
+export async function createSurvey(): Promise<Survey | null> {
+  const response = await fetch('/api/surveys', { method: 'POST' })
+  if (!response.ok) return null
+  return (await response.json()) as Survey
+}
+
+export async function deleteSurvey(id: string): Promise<boolean> {
+  const response = await fetch(`/api/surveys/${id}`, { method: 'DELETE' })
+  return response.ok
+}
