@@ -3,6 +3,7 @@ import { authMiddleware } from './middleware/auth'
 import { auth } from './routes/auth'
 import { publicRoutes } from './routes/public'
 import { questions } from './routes/questions'
+import { responses } from './routes/responses'
 import { surveys } from './routes/surveys'
 
 const app = new Hono<{ Bindings: Env }>()
@@ -18,5 +19,6 @@ app.route('/api/auth', auth)
 app.use('/api/surveys/*', authMiddleware)
 app.route('/api/surveys', surveys)
 app.route('/api/surveys', questions)
+app.route('/api/surveys/:surveyId/responses', responses)
 
 export default app

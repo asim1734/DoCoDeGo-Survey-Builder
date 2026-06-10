@@ -1,11 +1,15 @@
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import { BrandingPanel } from '../../components/BrandingPanel'
+import { QuestionEditor } from '../../components/QuestionEditor'
 import {
-  closestCenter,
   DndContext,
-  type DragEndEvent,
+  closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -13,16 +17,12 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { BrandingPanel } from '../../components/BrandingPanel'
-import { QuestionEditor } from '../../components/QuestionEditor'
 import {
   createQuestion,
   deleteQuestion,
   getSurvey,
-  type Question,
   reorderQuestions,
+  type Question,
   type SurveyWithQuestions,
   updateQuestion,
   updateSurvey,
@@ -49,7 +49,7 @@ function EditSurveyPage() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   )
 
   useEffect(() => {
@@ -87,12 +87,12 @@ function EditSurveyPage() {
       const newIndex = survey.questions.findIndex((q) => q.id === over.id)
 
       const newQuestions = arrayMove(survey.questions, oldIndex, newIndex)
-
+      
       // Update local state immediately
       setSurvey({ ...survey, questions: newQuestions })
 
       // Call API
-      const questionIds = newQuestions.map((q) => q.id)
+      const questionIds = newQuestions.map(q => q.id)
       const success = await reorderQuestions(survey.id, questionIds)
       if (!success) {
         // Revert on failure
@@ -194,7 +194,28 @@ function EditSurveyPage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] bg-surface-dim">
+    <div className="flex flex-col min-h-[calc(100vh-80px)] bg-surface-dim">
+      {/* Sub-navigation Tabs */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-border/50 px-6 py-4 flex items-center justify-center gap-2 z-40 sticky top-[80px] shadow-sm">
+        <div className="flex bg-surface-dim p-1.5 rounded-2xl border border-border/60 shadow-inner">
+          <Link
+            to="/surveys/$surveyId/edit"
+            params={{ surveyId }}
+            className="px-8 py-2.5 rounded-xl font-extrabold text-sm bg-brand text-white shadow-md hover:shadow-glow hover:-translate-y-0.5 transition-all"
+          >
+            Editor
+          </Link>
+          <Link
+            to="/surveys/$surveyId/responses"
+            params={{ surveyId }}
+            className="px-8 py-2.5 rounded-xl font-bold text-sm text-text-muted hover:bg-white/50 hover:text-text transition-all"
+          >
+            Responses
+          </Link>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row flex-1">
       {/* Left Panel: Builder Controls */}
       <div className="w-full lg:w-[400px] border-r border-border/80 bg-white/50 backdrop-blur-xl p-6 flex flex-col gap-6 overflow-y-auto">
         <div className="flex items-center justify-between">
@@ -406,6 +427,7 @@ function EditSurveyPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

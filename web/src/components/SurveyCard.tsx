@@ -28,11 +28,7 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
   })
 
   return (
-    <Link
-      to="/surveys/$surveyId/edit"
-      params={{ surveyId: survey.id }}
-      className="group relative block bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all duration-300"
-    >
+    <div className="group relative block bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all duration-300 flex flex-col">
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -45,9 +41,13 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
             </span>
             <span className="text-xs text-text-muted">{date}</span>
           </div>
-          <h3 className="text-xl font-bold text-text group-hover:text-brand transition-colors line-clamp-1">
+          <Link
+            to="/surveys/$surveyId/edit"
+            params={{ surveyId: survey.id }}
+            className="text-xl font-bold text-text hover:text-brand transition-colors line-clamp-1"
+          >
             {survey.title}
-          </h3>
+          </Link>
         </div>
         <button
           type="button"
@@ -73,9 +73,13 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
         </button>
       </div>
 
-      <div className="flex items-center gap-6 mt-6 pt-4 border-t border-border/50 text-sm text-text-muted">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-brand-50 text-brand">
+      <div className="mt-auto pt-4 border-t border-border/50 flex flex-col gap-3">
+        <div className="flex items-center justify-between w-full">
+          <Link
+            to="/surveys/$surveyId/edit"
+            params={{ surveyId: survey.id }}
+            className="text-sm font-semibold text-text-muted hover:text-brand transition-colors flex items-center gap-2"
+          >
             <svg
               aria-hidden="true"
               className="w-4 h-4"
@@ -87,13 +91,34 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
               />
             </svg>
-          </div>
-          <span className="font-medium text-text">TBD</span> Responses
+            Edit Survey
+          </Link>
+          <Link
+            to="/surveys/$surveyId/responses"
+            params={{ surveyId: survey.id }}
+            className="text-sm font-semibold text-brand hover:underline px-3 py-1.5 bg-brand/5 rounded-lg flex items-center gap-2"
+          >
+            <svg
+              aria-hidden="true"
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
+            </svg>
+            View Responses
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }

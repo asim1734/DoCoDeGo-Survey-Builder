@@ -175,3 +175,22 @@ export async function submitSurveyResponse(
   })
   return response.ok
 }
+
+// Responses API
+export type SurveyResponse = {
+  id: string
+  submitted_at: string
+  answers: Record<string, string>
+}
+
+export type SurveyResponsesData = {
+  survey: Survey
+  questions: Question[]
+  responses: SurveyResponse[]
+}
+
+export async function getSurveyResponses(surveyId: string): Promise<SurveyResponsesData | null> {
+  const response = await fetch(`/api/surveys/${surveyId}/responses`)
+  if (!response.ok) return null
+  return response.json()
+}
