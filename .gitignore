@@ -11,6 +11,7 @@ build/
 .vscode/
 .idea/
 ROADMAP
+
 # wrangler-generated types — regenerate on `pnpm install` via api/postinstall
 api/worker-configuration.d.ts
 

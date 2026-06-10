@@ -286,135 +286,126 @@ Web pages:
 
 ---
 
-### Phase 2: Survey CRUD + Dashboard (4–5 hours)
+### Phase 2A: Survey API Setup (1–2 hours)
 
 **What to build:**
-
-API routes:
 - `GET /api/surveys` — list all surveys for the logged-in user
 - `POST /api/surveys` — create a new survey (default title, default brand color)
 - `GET /api/surveys/:id` — get survey with its questions (owner only)
 - `PUT /api/surveys/:id` — update survey title, brand_color, logo_url, is_published
 - `DELETE /api/surveys/:id` — delete survey and all related data (cascade)
 
-Web pages:
-- `/dashboard` — list user's surveys as cards, "Create Survey" button, each card links to builder
-- Survey cards show: title, number of questions, number of responses, published status, created date
-
 **Done means:**
-- `pnpm check` and `pnpm typecheck` pass
-- Can create, view, and delete surveys from the dashboard
-
-**Manual testing checklist:**
-- [ ] Click "Create Survey" → new survey appears in the list
-- [ ] Survey card shows title, "0 questions", "Draft" status
-- [ ] Click a survey card → navigated to the builder page (even if builder is empty for now)
-- [ ] Delete a survey → it disappears from the list
-- [ ] Create 3+ surveys → they all appear, ordered by newest first
-- [ ] Log out and log in as a different email → see only that user's surveys (empty list)
+- `pnpm check` and `pnpm typecheck` pass.
+- API endpoints return expected JSON and enforce authentication.
 
 ---
 
-### Phase 3: Survey Builder — Questions + Branding (6–8 hours)
-
-**This is the core of the project. Spend the most time here.**
+### Phase 2B: Dashboard UI (2–3 hours)
 
 **What to build:**
+- `/dashboard` — list user's surveys as cards.
+- Add "Create Survey" button that calls the POST API and redirects.
+- Survey cards show: title, number of questions, number of responses, published status, created date.
 
-API routes:
+**Done means:**
+- Click "Create Survey" → new survey appears in the list.
+- Survey card displays correct details and links to the builder.
+- Delete a survey → it disappears from the list.
+
+---
+
+### Phase 3A: Question API Setup (1–2 hours)
+
+**What to build:**
 - `POST /api/surveys/:id/questions` — add a question
 - `PUT /api/surveys/:surveyId/questions/:questionId` — update question (title, type, options, is_required)
 - `DELETE /api/surveys/:surveyId/questions/:questionId` — remove a question
-- `PUT /api/surveys/:id/questions/reorder` — receive `{ questionIds: string[] }` and update all `sort_order` values
-
-Web page — `/surveys/$surveyId/edit`:
-- **Left panel:** question list with drag-and-drop reordering (dnd-kit)
-- **Right panel / inline:** question editor (type dropdown, title input, options editor for MC, required toggle)
-- **Top bar or side panel:** branding controls (color picker for `brand_color`, text input for `logo_url`)
-- **Publish toggle:** switch survey between draft and published
-- **Preview section:** shows how the survey will look with current branding
-
-Question types (MVP — 3 required):
-1. **Short text** — single line text input
-2. **Multiple choice** — radio buttons, configurable options (add/remove option strings)
-3. **Rating** — 1–5 stars or number scale
+- `PUT /api/surveys/:id/questions/reorder` — update `sort_order`
 
 **Done means:**
-- `pnpm check` and `pnpm typecheck` pass
-- Can build a complete survey with all 3 question types, reorder them, brand it, and publish it
-
-**Manual testing checklist:**
-- [ ] Add a short text question → appears in the question list
-- [ ] Add a multiple choice question → can add 3+ options, remove an option
-- [ ] Add a rating question → appears correctly
-- [ ] Drag a question to reorder → order is saved (refresh the page to verify)
-- [ ] Edit question title → saved
-- [ ] Toggle "required" on a question → saved
-- [ ] Change brand color → preview updates immediately
-- [ ] Paste a logo URL → preview shows the logo
-- [ ] Click "Publish" → survey status changes to published
-- [ ] Delete a question → it disappears, remaining questions re-order correctly
-- [ ] Refresh the page → all changes are persisted
+- Question endpoints can be curled/tested successfully.
+- Correct error codes returned for missing data.
 
 ---
 
-### Phase 4: Public Survey + Response Submission (4–5 hours)
+### Phase 3B: Survey Builder Layout & Branding (2–3 hours)
 
 **What to build:**
-
-API routes:
-- `GET /api/public/surveys/:id` — returns survey + questions (no auth required, only if `is_published = 1`)
-- `POST /api/public/surveys/:id/respond` — accepts `{ answers: [{ questionId, value }] }`, validates, creates response + answers
-
-Web page — `/s/$surveyId`:
-- Public-facing survey page, no login required
-- Renders in the survey owner's brand (brand_color, logo)
-- Shows all questions in order, appropriate input for each type
-- Submit button → POST answers → show "Thank you" confirmation
-- If survey is not published or doesn't exist → show a clean error page
+- `/surveys/$surveyId/edit` page skeleton (Left/Right panel split).
+- **Top/Side bar:** Branding controls (color picker for `brand_color`, text input for `logo_url`).
+- **Preview section:** Visual preview of the survey that reacts instantly to branding changes.
+- **Publish toggle:** Switch survey between draft and published.
 
 **Done means:**
-- `pnpm check` and `pnpm typecheck` pass
-- Full happy path works: create survey → publish → open public URL → fill out → submit
-
-**Manual testing checklist:**
-- [ ] Open `/s/<survey-id>` for a published survey → renders with correct branding
-- [ ] See all questions in the correct order
-- [ ] Short text: can type an answer
-- [ ] Multiple choice: can select one option
-- [ ] Rating: can select a rating (1–5)
-- [ ] Submit with all required fields filled → "Thank you" screen
-- [ ] Submit with a required field empty → validation error, no submission
-- [ ] Open `/s/<survey-id>` for an unpublished survey → "Survey not found" message
-- [ ] Open `/s/nonexistent-id` → "Survey not found" message
-- [ ] Submit another response → both are stored (no overwriting)
+- Changing brand color updates the preview immediately.
+- Toggling "Publish" saves to the database successfully.
 
 ---
 
-### Phase 5: Responses Dashboard (3–4 hours)
+### Phase 3C: Question Editor Components (3–4 hours)
 
 **What to build:**
-
-API routes:
-- `GET /api/surveys/:id/responses` — returns all responses with their answers (owner only)
-
-Web page — `/surveys/$surveyId/responses`:
-- Table view: one row per response, one column per question
-- Show response count at the top
-- For rating questions: show average rating in a summary row
-- Link from dashboard survey card → "View Responses"
+- UI to add 3 question types: Short text, Multiple choice, Rating.
+- Inline editor for question titles.
+- Options editor for Multiple Choice (add/remove strings).
+- Required toggle for each question.
 
 **Done means:**
-- `pnpm check` and `pnpm typecheck` pass
-- Can view all submitted responses for a survey
+- Can add, edit, and delete all 3 types of questions.
+- Multiple choice options save to the JSON array correctly in the DB.
 
-**Manual testing checklist:**
-- [ ] Navigate to responses page for a survey with 0 responses → "No responses yet" message
-- [ ] Submit 2–3 responses via the public URL → they appear in the table
-- [ ] Each row shows the correct answer for each question
-- [ ] Rating questions show the average in a summary
-- [ ] Page is only accessible when logged in as the survey owner
-- [ ] Try accessing responses for another user's survey → 403 or redirect
+---
+
+### Phase 3D: Drag-and-Drop Reordering (1–2 hours)
+
+**What to build:**
+- Implement `@dnd-kit/core` and `@dnd-kit/sortable` in the left panel list.
+- Wire up the `onDragEnd` event to call the `reorder` API endpoint.
+
+**Done means:**
+- Dragging a question reorders it visually.
+- Refreshing the page proves the order saved in the DB.
+
+---
+
+### Phase 4A: Public Survey API & Validation (1–2 hours)
+
+**What to build:**
+- `GET /api/public/surveys/:id` — returns survey + questions (no auth required, only if `is_published = 1`).
+- `POST /api/public/surveys/:id/respond` — accepts `{ answers: [{ questionId, value }] }`, validates, creates response + answers.
+
+**Done means:**
+- Public endpoints work without cookies.
+- Validation rejects invalid or missing required answers.
+
+---
+
+### Phase 4B: Public Survey Form UI (2–3 hours)
+
+**What to build:**
+- `/s/$surveyId` — Public-facing survey page.
+- Renders in the survey owner's brand (brand_color, logo).
+- Submit button → POST answers → show "Thank you" screen.
+
+**Done means:**
+- Open `/s/<survey-id>` → renders with correct branding.
+- Short text, Multiple choice, and Rating inputs all function.
+- Submit with required fields empty → UI validation error.
+- Submit with all valid → "Thank you" screen.
+
+---
+
+### Phase 5: Responses Dashboard (2–3 hours)
+
+**What to build:**
+- `GET /api/surveys/:id/responses` — API to fetch responses.
+- `/surveys/$surveyId/responses` — Table view of submitted data.
+- Row per response, column per question.
+
+**Done means:**
+- Table displays responses correctly.
+- Page handles empty states elegantly ("No responses yet").
 
 ---
 
