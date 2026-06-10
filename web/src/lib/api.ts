@@ -1,6 +1,7 @@
 type User = {
   id: string
   email: string
+  name?: string
   created_at: string
 }
 
@@ -22,11 +23,12 @@ export async function sendOtpCode(email: string): Promise<{ ok: boolean; error?:
 export async function verifyOtpCode(
   email: string,
   code: string,
+  name?: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const response = await fetch('/api/auth/verify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, code }),
+    body: JSON.stringify({ email, code, name }),
   })
 
   if (!response.ok) {

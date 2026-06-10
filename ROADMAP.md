@@ -241,6 +241,11 @@ DoCoDeGo-Survey-Builder/
 - [ ] `http://localhost:5173/api/health` returns `{ "status": "ok" }` (Vite proxy works)
 - [ ] D1 tables exist when queried via wrangler CLI
 
+**Recommended Commits:**
+1. `docs: create project roadmap` (ROADMAP.md)
+2. `chore: project setup, tailwind, and dependencies` (Config files, package.json, app.css, main.tsx)
+3. `feat(api): define D1 database schema` (api/src/db/schema.sql)
+
 ---
 
 ### Phase 1: Auth — Email OTP + Sessions (4–5 hours)
@@ -274,6 +279,10 @@ Web pages:
 - [ ] Enter an expired code (wait >5 min or manually expire it) → error message
 - [ ] Hit `/api/auth/me` directly → returns user JSON when logged in, 401 when not
 - [ ] Try accessing `/dashboard` when logged out → redirected to `/login`
+
+**Recommended Commits:**
+1. `feat(api): implement email OTP and session routes` (api/src/routes/auth.ts, middleware, index.ts)
+2. `feat(web): implement login flow and auth context` (web/src/routes/login.tsx, __root.tsx, lib/api.ts, etc.)
 
 ---
 

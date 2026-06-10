@@ -4,6 +4,7 @@ import { getCookie } from 'hono/cookie'
 type User = {
   id: string
   email: string
+  name?: string
   created_at: string
 }
 
@@ -22,7 +23,7 @@ export async function authMiddleware(c: Context<AuthEnv>, next: Next) {
   }
 
   const row = await c.env.DB.prepare(
-    `SELECT users.id, users.email, users.created_at
+    `SELECT users.id, users.email, users.name, users.created_at
      FROM sessions
      JOIN users ON users.id = sessions.user_id
      WHERE sessions.id = ? AND sessions.expires_at > datetime('now')`,

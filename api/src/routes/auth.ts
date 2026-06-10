@@ -32,9 +32,10 @@ auth.post('/send-code', async (c) => {
 })
 
 auth.post('/verify', async (c) => {
-  const body = await c.req.json<{ email?: string; code?: string }>()
+  const body = await c.req.json<{ email?: string; code?: string; name?: string }>()
   const email = body.email?.trim().toLowerCase()
   const code = body.code?.trim()
+  const name = body.name?.trim()
 
   if (!email || !code) {
     return c.json({ error: 'Email and code are required' }, 400)
@@ -60,8 +61,13 @@ auth.post('/verify', async (c) => {
   let userRow = await c.env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
 
   if (!userRow) {
+    if (!name) {
+      return c.json({ error: 'Name is required to create a new account' }, 400)
+    }
     const userId = nanoid()
-    await c.env.DB.prepare('INSERT INTO users (id, email) VALUES (?, ?)').bind(userId, email).run()
+    await c.env.DB.prepare('INSERT INTO users (id, email, name) VALUES (?, ?, ?)')
+      .bind(userId, email, name)
+      .run()
     userRow = { id: userId }
   }
 
@@ -104,7 +110,7 @@ auth.get('/me', async (c) => {
   }
 
   const row = await c.env.DB.prepare(
-    `SELECT users.id, users.email, users.created_at
+    `SELECT users.id, users.email, users.name, users.created_at
      FROM sessions
      JOIN users ON users.id = sessions.user_id
      WHERE sessions.id = ? AND sessions.expires_at > datetime('now')`,
