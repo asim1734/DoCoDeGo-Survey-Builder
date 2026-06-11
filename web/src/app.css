@@ -3,44 +3,44 @@
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
 
-  /* Brand Colors (Ocean Blue) */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6; /* Main brand */
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
+  /* Brand Colors (Sage Green) */
+  --color-brand-50: #f2f5f1;
+  --color-brand-100: #e0e7de;
+  --color-brand-200: #c3d1c0;
+  --color-brand-300: #9eb399;
+  --color-brand-400: #789072;
+  --color-brand-500: #5c7556; /* Main brand */
+  --color-brand-600: #465c41;
+  --color-brand-700: #394a35;
   --color-brand: var(--color-brand-500);
   --color-brand-light: var(--color-brand-400);
   --color-brand-dark: var(--color-brand-600);
 
   /* Surfaces */
   --color-surface: #ffffff;
-  --color-surface-dim: #f8fafc; /* Cooler, premium light gray */
-  --color-surface-dark: #0f172a;
+  --color-surface-dim: #F4F0E6; /* Warm off-white beige */
+  --color-surface-dark: #2F2E2C;
 
-  /* Typography */
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
+  /* Typography (Notion-esque Charcoal) */
+  --color-text: #37352F;
+  --color-text-muted: #787774;
   --color-text-on-brand: #ffffff;
 
   /* UI Elements */
-  --color-border: #e2e8f0;
-  --color-danger: #ef4444;
-  --color-success: #10b981;
+  --color-border: #E9E5DF;
+  --color-danger: #EB5757;
+  --color-success: #0F7B6C;
 
   /* Radii */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
 
-  /* Shadows */
-  --shadow-soft: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.4);
+  /* Shadows (Soft earthy brown/gray tint) */
+  --shadow-soft: 0 4px 24px -6px rgba(55, 53, 47, 0.08);
+  --shadow-glow: 0 0 20px rgba(92, 117, 86, 0.2);
 }
 
 /* Base reset and defaults */
@@ -53,13 +53,8 @@
 body {
   font-family: var(--font-sans);
   color: var(--color-text);
-  /* A subtle, premium mesh/gradient background */
-  background-color: var(--color-surface-dim);
-  background-image:
-    radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 0.03) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.03) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.03) 0, transparent 50%);
-  background-attachment: fixed;
+  /* A clean, warm minimalist background */
+  background-color: #F9F6F0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }

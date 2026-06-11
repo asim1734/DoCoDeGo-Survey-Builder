@@ -32,7 +32,7 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
     <Link
       to="/surveys/$surveyId/edit"
       params={{ surveyId: survey.id }}
-      className="group relative block bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      className="group relative block bg-surface border border-border/50 rounded-2xl p-6 shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all duration-300 flex flex-col"
     >
       <div className="flex justify-between items-start mb-4">
         <div>
