@@ -47,19 +47,19 @@ function ResponsesPage() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-80px)] bg-surface">
       {/* Sub-navigation Tabs */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-border/50 px-6 py-4 flex items-center justify-center gap-2 z-40 sticky top-[80px] shadow-sm">
-        <div className="flex bg-surface-dim p-1.5 rounded-2xl border border-border/60 shadow-inner">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-border/50 px-6 py-2 flex items-center justify-start gap-2 z-40 sticky top-[80px] shadow-sm">
+        <div className="flex bg-surface-dim p-1 rounded-xl border border-border/60 shadow-inner">
           <Link
             to="/surveys/$surveyId/edit"
             params={{ surveyId }}
-            className="px-8 py-2.5 rounded-xl font-bold text-sm text-text-muted hover:bg-white/50 hover:text-text transition-all"
+            className="px-4 py-1 rounded-lg font-bold text-base text-text-muted hover:bg-white/50 hover:text-text transition-all"
           >
             Editor
           </Link>
           <Link
             to="/surveys/$surveyId/responses"
             params={{ surveyId }}
-            className="px-8 py-2.5 rounded-xl font-extrabold text-sm bg-brand text-white shadow-md hover:shadow-glow hover:-translate-y-0.5 transition-all"
+            className="px-4 py-1 rounded-lg font-extrabold text-base bg-brand text-white shadow-md hover:shadow-glow hover:-translate-y-0.5 transition-all"
           >
             Responses
           </Link>
