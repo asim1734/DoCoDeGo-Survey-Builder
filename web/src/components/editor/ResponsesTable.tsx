@@ -1,5 +1,6 @@
 import type React from 'react'
 import type { SurveyResponsesData } from '../../lib/api'
+import { ExportCsvButton } from '../ExportCsvButton'
 
 type ResponsesTableProps = {
   data: SurveyResponsesData | null
@@ -8,7 +9,10 @@ type ResponsesTableProps = {
 export function ResponsesTable({ data }: ResponsesTableProps) {
   return (
     <div className="bg-white rounded-3xl border border-border/40 shadow-soft p-8">
-      <h2 className="text-2xl font-bold text-text mb-6">Survey Responses</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-text">Survey Responses</h2>
+        {data && <ExportCsvButton data={data} />}
+      </div>
 
       {!data || data.responses.length === 0 ? (
         <div className="text-center py-12">

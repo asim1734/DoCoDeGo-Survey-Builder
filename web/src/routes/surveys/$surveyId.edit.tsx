@@ -96,7 +96,6 @@ function EditSurveyPage() {
         {/* Right Panel: Live Preview/Editor */}
         <div className="flex-1 p-3 lg:p-6 lg:pt-4 overflow-y-auto">
           <div className="max-w-2xl mx-auto">
-
             {/* Survey Render Wrapper */}
             <div
               className="bg-white rounded-3xl shadow-xl overflow-hidden border border-border/40 transition-all duration-300"
