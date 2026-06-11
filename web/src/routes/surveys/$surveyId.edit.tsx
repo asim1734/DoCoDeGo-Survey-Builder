@@ -1,34 +1,15 @@
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { closestCenter, DndContext } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import { BrandingPanel } from '../../components/BrandingPanel'
+import { AddQuestionControls } from '../../components/editor/AddQuestionControls'
+import { PublishingPanel } from '../../components/editor/PublishingPanel'
 import { QuestionEditor } from '../../components/QuestionEditor'
 import { Spinner } from '../../components/Spinner'
-import {
-  createQuestion,
-  deleteQuestion,
-  getSurvey,
-  type Question,
-  reorderQuestions,
-  type SurveyWithQuestions,
-  updateQuestion,
-  updateSurvey,
-} from '../../lib/api'
-import { useAuth } from '../__root'
+
+import { useSurvey } from '../../hooks/useSurvey'
+import { useSurveyEditor } from '../../hooks/useSurveyEditor'
+import { useSurveyQuestions } from '../../hooks/useSurveyQuestions'
 
 export const Route = createFileRoute('/surveys/$surveyId/edit')({
   component: EditSurveyPage,
@@ -36,157 +17,10 @@ export const Route = createFileRoute('/surveys/$surveyId/edit')({
 
 function EditSurveyPage() {
   const { surveyId } = Route.useParams()
-  const { user } = useAuth()
 
-  const [survey, setSurvey] = useState<SurveyWithQuestions | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [liveTitle, setLiveTitle] = useState('')
-  const [liveBrandColor, setLiveBrandColor] = useState('#3b82f6')
-  const [liveLogoUrl, setLiveLogoUrl] = useState('')
-  const [isPublishing, setIsPublishing] = useState(false)
-  const [isAddingQuestion, setIsAddingQuestion] = useState(false)
-  const [copied, setCopied] = useState(false)
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  )
-
-  useEffect(() => {
-    const fetchIt = async () => {
-      const data = await getSurvey(surveyId)
-      if (data) {
-        setSurvey(data)
-        setLiveTitle(data.title)
-        setLiveBrandColor(data.brand_color)
-        setLiveLogoUrl(data.logo_url)
-      }
-      setLoading(false)
-    }
-    if (user) {
-      fetchIt()
-    }
-  }, [surveyId, user])
-
-  const handleTitleBlur = async () => {
-    if (!survey || liveTitle === survey.title) return
-    const success = await updateSurvey(survey.id, { title: liveTitle })
-    if (success) {
-      setSurvey({ ...survey, title: liveTitle })
-    } else {
-      setLiveTitle(survey.title) // revert on failure
-    }
-  }
-
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event
-    if (!survey || !over) return
-
-    if (active.id !== over.id) {
-      const oldIndex = survey.questions.findIndex((q) => q.id === active.id)
-      const newIndex = survey.questions.findIndex((q) => q.id === over.id)
-
-      const newQuestions = arrayMove(survey.questions, oldIndex, newIndex)
-
-      // Update local state immediately
-      setSurvey({ ...survey, questions: newQuestions })
-
-      // Call API
-      const questionIds = newQuestions.map((q) => q.id)
-      const success = await reorderQuestions(survey.id, questionIds)
-      if (!success) {
-        // Revert on failure
-        setSurvey({ ...survey, questions: survey.questions })
-      }
-    }
-  }
-
-  const handleSaveBranding = async (data: { brand_color: string; logo_url: string }) => {
-    if (!survey) return
-    const success = await updateSurvey(survey.id, data)
-    if (success) {
-      setSurvey({ ...survey, ...data })
-    }
-  }
-
-  const handleTogglePublish = async () => {
-    if (!survey) return
-    setIsPublishing(true)
-    const newStatus = survey.is_published === 1 ? 0 : 1
-    const success = await updateSurvey(survey.id, { is_published: newStatus === 1 })
-    if (success) {
-      setSurvey({ ...survey, is_published: newStatus })
-    }
-    setIsPublishing(false)
-  }
-
-  const handleCopyLink = () => {
-    if (!survey) return
-    const url = `${window.location.origin}/s/${survey.id}`
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  const handleAddQuestion = async (type: string) => {
-    if (!survey) return
-    setIsAddingQuestion(true)
-
-    let defaultOptions: string[] = []
-    if (type === 'multiple_choice' || type === 'checkboxes' || type === 'dropdown') {
-      defaultOptions = ['Option 1', 'Option 2']
-    } else if (type === 'linear_scale') {
-      defaultOptions = ['1', '5']
-    }
-
-    const newQ = await createQuestion(survey.id, {
-      title: 'New Question',
-      type,
-      options: defaultOptions,
-      is_required: 1,
-    })
-
-    if (newQ) {
-      setSurvey({
-        ...survey,
-        questions: [...survey.questions, newQ],
-      })
-    }
-    setIsAddingQuestion(false)
-  }
-
-  const handleUpdateQuestion = async (questionId: string, updates: Partial<Question>) => {
-    if (!survey) return
-
-    const oldQuestions = [...survey.questions]
-    const updatedQuestions = oldQuestions.map((q) =>
-      q.id === questionId ? { ...q, ...updates } : q,
-    )
-    setSurvey({ ...survey, questions: updatedQuestions })
-
-    const success = await updateQuestion(survey.id, questionId, updates)
-    if (!success) {
-      setSurvey({ ...survey, questions: oldQuestions })
-    }
-  }
-
-  const handleDeleteQuestion = async (questionId: string) => {
-    if (!survey) return
-    if (!confirm('Are you sure you want to delete this question?')) return
-
-    const oldQuestions = [...survey.questions]
-    setSurvey({
-      ...survey,
-      questions: oldQuestions.filter((q) => q.id !== questionId),
-    })
-
-    const success = await deleteQuestion(survey.id, questionId)
-    if (!success) {
-      setSurvey({ ...survey, questions: oldQuestions })
-    }
-  }
+  const { survey, setSurvey, loading } = useSurvey(surveyId)
+  const editor = useSurveyEditor(survey, setSurvey)
+  const questions = useSurveyQuestions(survey, setSurvey)
 
   if (loading) {
     return (
@@ -231,162 +65,51 @@ function EditSurveyPage() {
         {/* Left Panel: Builder Controls */}
         <div className="w-full lg:w-[400px] border-r border-border/80 bg-white/50 backdrop-blur-xl p-6 flex flex-col gap-6 overflow-y-auto">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-extrabold text-text line-clamp-1" title={liveTitle}>
-              {liveTitle}
+            <h1 className="text-2xl font-extrabold text-text line-clamp-1" title={editor.liveTitle}>
+              {editor.liveTitle}
             </h1>
           </div>
 
           <BrandingPanel
             brandColor={survey.brand_color}
             logoUrl={survey.logo_url}
-            onColorChange={setLiveBrandColor}
-            onLogoChange={setLiveLogoUrl}
-            onSave={handleSaveBranding}
+            onColorChange={editor.setLiveBrandColor}
+            onLogoChange={editor.setLiveLogoUrl}
+            onSave={editor.handleSaveBranding}
           />
 
-          {/* Add Question Controls */}
           <div className="bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft space-y-4">
-            <h3 className="text-lg font-bold text-text">Add Question</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('short_text')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Short Text
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('long_text')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Long Text
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('multiple_choice')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Radio Choice
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('checkboxes')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Checkboxes
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('dropdown')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Dropdown
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('date')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Date Picker
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('linear_scale')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Linear Scale
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAddQuestion('rating')}
-                disabled={isAddingQuestion}
-                className="flex items-center gap-2 p-3 text-sm font-semibold bg-white border border-border/60 rounded-xl hover:border-brand hover:text-brand hover:shadow-soft transition-all"
-              >
-                Star Rating
-              </button>
-            </div>
+            <AddQuestionControls
+              onAdd={questions.handleAddQuestion}
+              disabled={questions.isAddingQuestion}
+            />
           </div>
 
-          <div className="bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-text">Publishing</h3>
-                <p className="text-xs text-text-muted mt-1">
-                  {survey.is_published ? 'Survey is live.' : 'Survey is hidden.'}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleTogglePublish}
-                disabled={isPublishing}
-                className={`px-4 py-2 font-bold rounded-lg transition-colors focus:outline-none ${
-                  survey.is_published
-                    ? 'bg-danger/10 text-danger hover:bg-danger/20'
-                    : 'bg-success/10 text-success hover:bg-success/20'
-                }`}
-              >
-                {isPublishing ? '...' : survey.is_published ? 'Unpublish' : 'Publish'}
-              </button>
-            </div>
-            {survey.is_published === 1 && (
-              <div className="mt-4 p-3 bg-surface-dim rounded-lg flex items-center justify-between">
-                <span className="text-xs font-mono text-text-muted truncate mr-2">
-                  {window.location.origin}/s/{survey.id}
-                </span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={handleCopyLink}
-                    className={`text-xs font-semibold whitespace-nowrap transition-colors ${
-                      copied ? 'text-success' : 'text-text-muted hover:text-text'
-                    }`}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
-                  <a
-                    href={`/s/${survey.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs font-semibold text-brand hover:underline whitespace-nowrap"
-                  >
-                    Open →
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
+          <PublishingPanel
+            isPublished={survey.is_published === 1}
+            isPublishing={editor.isPublishing}
+            surveyId={survey.id}
+            onTogglePublish={editor.handleTogglePublish}
+          />
         </div>
 
-        {/* Right Panel: Live Preview */}
-        <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
+        {/* Right Panel: Live Preview/Editor */}
+        <div className="flex-1 p-3 lg:p-6 lg:pt-4 overflow-y-auto">
           <div className="max-w-2xl mx-auto">
-            <div className="mb-4 flex items-center gap-2">
-              <span className="text-sm font-semibold text-text-muted tracking-wider uppercase">
-                Live Preview
-              </span>
-            </div>
 
             {/* Survey Render Wrapper */}
             <div
               className="bg-white rounded-3xl shadow-xl overflow-hidden border border-border/40 transition-all duration-300"
-              style={{ '--color-brand': liveBrandColor } as React.CSSProperties}
+              style={{ '--color-brand': editor.liveBrandColor } as React.CSSProperties}
             >
               {/* Survey Header (Brand Color & Logo) */}
               <div className="h-32 bg-[var(--color-brand)] relative transition-colors duration-300" />
 
               <div className="px-8 pb-12 pt-8 relative -mt-16">
-                {liveLogoUrl ? (
+                {editor.liveLogoUrl ? (
                   <div className="w-24 h-24 bg-white rounded-2xl p-2 shadow-soft mb-8 border border-border/50">
                     <img
-                      src={liveLogoUrl}
+                      src={editor.liveLogoUrl}
                       alt="Logo"
                       className="w-full h-full object-contain rounded-xl"
                     />
@@ -399,9 +122,9 @@ function EditSurveyPage() {
 
                 <input
                   type="text"
-                  value={liveTitle}
-                  onChange={(e) => setLiveTitle(e.target.value)}
-                  onBlur={handleTitleBlur}
+                  value={editor.liveTitle}
+                  onChange={(e) => editor.setLiveTitle(e.target.value)}
+                  onBlur={editor.handleTitleBlur}
                   className="w-full text-4xl font-extrabold text-text mb-4 bg-transparent border-0 border-b-2 border-transparent hover:border-border/50 focus:border-brand focus:outline-none focus:ring-0 px-0 pb-1 transition-colors"
                   placeholder="Survey Title"
                 />
@@ -413,9 +136,9 @@ function EditSurveyPage() {
                     </div>
                   ) : (
                     <DndContext
-                      sensors={sensors}
+                      sensors={questions.sensors}
                       collisionDetection={closestCenter}
-                      onDragEnd={handleDragEnd}
+                      onDragEnd={questions.handleDragEnd}
                     >
                       <SortableContext
                         items={survey.questions.map((q) => q.id)}
@@ -425,8 +148,10 @@ function EditSurveyPage() {
                           <QuestionEditor
                             key={question.id}
                             question={question}
-                            onChange={(updates) => handleUpdateQuestion(question.id, updates)}
-                            onDelete={() => handleDeleteQuestion(question.id)}
+                            onChange={(updates) =>
+                              questions.handleUpdateQuestion(question.id, updates)
+                            }
+                            onDelete={() => questions.handleDeleteQuestion(question.id)}
                           />
                         ))}
                       </SortableContext>

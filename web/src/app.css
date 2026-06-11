@@ -18,18 +18,18 @@
 
   /* Surfaces */
   --color-surface: #ffffff;
-  --color-surface-dim: #F4F0E6; /* Warm off-white beige */
-  --color-surface-dark: #2F2E2C;
+  --color-surface-dim: #f4f0e6; /* Warm off-white beige */
+  --color-surface-dark: #2f2e2c;
 
   /* Typography (Notion-esque Charcoal) */
-  --color-text: #37352F;
+  --color-text: #37352f;
   --color-text-muted: #787774;
   --color-text-on-brand: #ffffff;
 
   /* UI Elements */
-  --color-border: #E9E5DF;
-  --color-danger: #EB5757;
-  --color-success: #0F7B6C;
+  --color-border: #e9e5df;
+  --color-danger: #eb5757;
+  --color-success: #0f7b6c;
 
   /* Radii */
   --radius-sm: 0.25rem;
@@ -54,7 +54,7 @@ body {
   font-family: var(--font-sans);
   color: var(--color-text);
   /* A clean, warm minimalist background */
-  background-color: #F9F6F0;
+  background-color: #f9f6f0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
