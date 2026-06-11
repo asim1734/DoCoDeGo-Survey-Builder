@@ -12,6 +12,7 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (!confirm('Are you sure you want to delete this survey? This cannot be undone.')) {
       return
     }
@@ -28,7 +29,11 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
   })
 
   return (
-    <div className="group relative block bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all duration-300 flex flex-col">
+    <Link
+      to="/surveys/$surveyId/edit"
+      params={{ surveyId: survey.id }}
+      className="group relative block bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-soft hover:shadow-glow hover:-translate-y-1 transition-all duration-300 flex flex-col"
+    >
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -41,13 +46,9 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
             </span>
             <span className="text-xs text-text-muted">{date}</span>
           </div>
-          <Link
-            to="/surveys/$surveyId/edit"
-            params={{ surveyId: survey.id }}
-            className="text-xl font-bold text-text hover:text-brand transition-colors line-clamp-1"
-          >
+          <h3 className="text-xl font-bold text-text group-hover:text-brand transition-colors line-clamp-1">
             {survey.title}
-          </Link>
+          </h3>
         </div>
         <button
           type="button"
@@ -75,11 +76,7 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
 
       <div className="mt-auto pt-4 border-t border-border/50 flex flex-col gap-3">
         <div className="flex items-center justify-between w-full">
-          <Link
-            to="/surveys/$surveyId/edit"
-            params={{ surveyId: survey.id }}
-            className="text-sm font-semibold text-text-muted hover:text-brand transition-colors flex items-center gap-2"
-          >
+          <span className="text-sm font-semibold text-text-muted group-hover:text-brand transition-colors flex items-center gap-2">
             <svg
               aria-hidden="true"
               className="w-4 h-4"
@@ -94,31 +91,10 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
               />
             </svg>
-            Edit Survey
-          </Link>
-          <Link
-            to="/surveys/$surveyId/responses"
-            params={{ surveyId: survey.id }}
-            className="text-sm font-semibold text-brand hover:underline px-3 py-1.5 bg-brand/5 rounded-lg flex items-center gap-2"
-          >
-            <svg
-              aria-hidden="true"
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
-            View Responses
-          </Link>
+            Open Survey
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }

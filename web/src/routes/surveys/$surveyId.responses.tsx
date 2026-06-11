@@ -132,14 +132,33 @@ function ResponsesPage() {
                       <td className="p-4 text-sm text-text-muted whitespace-nowrap border-r border-border/30">
                         {new Date(res.submitted_at).toLocaleString()}
                       </td>
-                      {data.questions.map((q) => (
-                        <td
-                          key={q.id}
-                          className="p-4 text-sm text-text border-r border-border/30 last:border-0"
-                        >
-                          {res.answers[q.id] || <span className="text-text-muted/30">-</span>}
-                        </td>
-                      ))}
+                      {data.questions.map((q) => {
+                        const answer = res.answers[q.id]
+                        let displayValue: React.ReactNode = (
+                          <span className="text-border italic">No answer</span>
+                        )
+                        if (answer) {
+                          try {
+                            const parsed = JSON.parse(answer)
+                            if (Array.isArray(parsed)) {
+                              displayValue = parsed.join(', ')
+                            } else {
+                              displayValue = answer
+                            }
+                          } catch (_e) {
+                            displayValue = answer
+                          }
+                        }
+
+                        return (
+                          <td
+                            key={q.id}
+                            className="p-4 align-top border-r border-border/30 last:border-0"
+                          >
+                            <div className="text-sm text-text-muted">{displayValue}</div>
+                          </td>
+                        )
+                      })}
                     </tr>
                   ))}
                 </tbody>

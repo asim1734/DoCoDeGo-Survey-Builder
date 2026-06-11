@@ -136,15 +136,36 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
           </div>
         )}
 
-        {question.type === 'multiple_choice' && (
+        {(question.type === 'multiple_choice' ||
+          question.type === 'checkboxes' ||
+          question.type === 'dropdown') && (
           <div className="space-y-3">
+            {question.type === 'dropdown' && (
+              <div className="mb-4 p-3 bg-surface-dim border border-border/50 rounded-xl flex items-center justify-between text-text-muted text-sm">
+                <span>Respondent will see a dropdown menu</span>
+                <svg
+                  aria-hidden="true"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            )}
             {question.options.map((opt, idx) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: options are simple strings
               <div key={idx} className="flex items-center gap-3">
                 <input
-                  type="radio"
-                  name={`question-${question.id}`}
-                  className="w-5 h-5 text-brand border-2 border-border/80 focus:ring-brand cursor-pointer"
+                  type={question.type === 'checkboxes' ? 'checkbox' : 'radio'}
+                  disabled
+                  className={`w-5 h-5 text-brand border-2 border-border/80 ${question.type === 'checkboxes' ? 'rounded' : ''}`}
                 />
                 <input
                   type="text"
@@ -199,6 +220,52 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
               </svg>
               Add Option
             </button>
+          </div>
+        )}
+
+        {question.type === 'long_text' && (
+          <textarea
+            className="w-full px-4 py-3 bg-surface-dim border border-border/50 rounded-xl text-text text-sm focus:outline-none focus:ring-2 focus:ring-brand/50 min-h-[100px] resize-none"
+            placeholder="Long answer text"
+            disabled
+          />
+        )}
+
+        {question.type === 'date' && (
+          <input
+            type="date"
+            className="w-full px-4 py-3 bg-surface-dim border border-border/50 rounded-xl text-text text-sm focus:outline-none focus:ring-2 focus:ring-brand/50"
+            disabled
+          />
+        )}
+
+        {question.type === 'linear_scale' && (
+          <div className="flex items-center gap-4 bg-surface-dim p-4 border border-border/50 rounded-xl">
+            <div className="flex-1 flex flex-col gap-2">
+              <label htmlFor={`min-${question.id}`} className="text-xs font-semibold text-text-muted">Min Value</label>
+              <input
+                id={`min-${question.id}`}
+                type="text"
+                defaultValue={question.options[0] || '1'}
+                onBlur={(e) => handleUpdateOption(0, e.target.value)}
+                className="w-full bg-white border border-border/50 hover:border-brand focus:border-brand focus:outline-none focus:ring-0 px-3 py-2 rounded-lg text-sm"
+                placeholder="e.g. 1"
+              />
+            </div>
+            <div className="flex items-center justify-center pt-6">
+              <span className="text-text-muted font-medium">to</span>
+            </div>
+            <div className="flex-1 flex flex-col gap-2">
+              <label htmlFor={`max-${question.id}`} className="text-xs font-semibold text-text-muted">Max Value</label>
+              <input
+                id={`max-${question.id}`}
+                type="text"
+                defaultValue={question.options[1] || '5'}
+                onBlur={(e) => handleUpdateOption(1, e.target.value)}
+                className="w-full bg-white border border-border/50 hover:border-brand focus:border-brand focus:outline-none focus:ring-0 px-3 py-2 rounded-lg text-sm"
+                placeholder="e.g. 5"
+              />
+            </div>
           </div>
         )}
       </div>
