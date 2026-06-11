@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { QuestionRenderer } from '../../components/QuestionRenderer'
+import { Spinner } from '../../components/Spinner'
 import { getPublicSurvey, type SurveyWithQuestions, submitSurveyResponse } from '../../lib/api'
 
 export const Route = createFileRoute('/s/$surveyId')({
@@ -86,7 +87,7 @@ function PublicSurveyPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-surface">
-        <p className="text-text-muted">Loading survey...</p>
+        <Spinner />
       </div>
     )
   }

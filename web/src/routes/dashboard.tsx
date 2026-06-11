@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { Spinner } from '../components/Spinner'
 import { SurveyCard } from '../components/SurveyCard'
 import { createSurvey, deleteSurvey, getSurveys, type Survey } from '../lib/api'
 import { useAuth } from './__root'
@@ -9,17 +10,17 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function DashboardPage() {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [surveys, setSurveys] = useState<Survey[]>([])
   const [loadingSurveys, setLoadingSurveys] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       navigate({ to: '/login' })
     }
-  }, [loading, user, navigate])
+  }, [authLoading, user, navigate])
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -53,10 +54,10 @@ function DashboardPage() {
     }
   }
 
-  if (loading || (user && loadingSurveys)) {
+  if (authLoading || (user && loadingSurveys)) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-60px)]">
-        <p className="text-text-muted">Loading...</p>
+        <Spinner />
       </div>
     )
   }

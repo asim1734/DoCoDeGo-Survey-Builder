@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { Spinner } from '../../components/Spinner'
 import { getSurveyResponses, type SurveyResponsesData } from '../../lib/api'
 import { useAuth } from '../__root'
 
@@ -29,7 +30,7 @@ function ResponsesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-60px)]">
-        <p className="text-text-muted">Loading responses...</p>
+        <Spinner />
       </div>
     )
   }
@@ -77,76 +78,76 @@ function ResponsesPage() {
           </div>
         </div>
 
-      {data.responses.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-border/40 shadow-soft">
-          <div className="w-20 h-20 bg-surface-dim rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg
-              aria-hidden="true"
-              className="w-10 h-10 text-text-muted/50"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-text mb-2">No responses yet</h2>
-          <p className="text-text-muted max-w-md mx-auto">
-            Share your survey link to start collecting answers. Responses will appear here in
-            real-time.
-          </p>
-          {!data.survey.is_published && (
-            <p className="text-danger mt-4 text-sm font-semibold">
-              Warning: Your survey is currently unpublished!
+        {data.responses.length === 0 ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-border/40 shadow-soft">
+            <div className="w-20 h-20 bg-surface-dim rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg
+                aria-hidden="true"
+                className="w-10 h-10 text-text-muted/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-text mb-2">No responses yet</h2>
+            <p className="text-text-muted max-w-md mx-auto">
+              Share your survey link to start collecting answers. Responses will appear here in
+              real-time.
             </p>
-          )}
-        </div>
-      ) : (
-        <div className="bg-white rounded-3xl border border-border/40 shadow-soft overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-surface-dim border-b border-border/50">
-                  <th className="p-4 text-sm font-semibold text-text-muted whitespace-nowrap border-r border-border/30">
-                    Submitted At
-                  </th>
-                  {data.questions.map((q) => (
-                    <th
-                      key={q.id}
-                      className="p-4 text-sm font-semibold text-text whitespace-nowrap border-r border-border/30 last:border-0"
-                    >
-                      {q.title}
+            {!data.survey.is_published && (
+              <p className="text-danger mt-4 text-sm font-semibold">
+                Warning: Your survey is currently unpublished!
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="bg-white rounded-3xl border border-border/40 shadow-soft overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-dim border-b border-border/50">
+                    <th className="p-4 text-sm font-semibold text-text-muted whitespace-nowrap border-r border-border/30">
+                      Submitted At
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/30">
-                {data.responses.map((res) => (
-                  <tr key={res.id} className="hover:bg-surface-dim/50 transition-colors">
-                    <td className="p-4 text-sm text-text-muted whitespace-nowrap border-r border-border/30">
-                      {new Date(res.submitted_at).toLocaleString()}
-                    </td>
                     {data.questions.map((q) => (
-                      <td
+                      <th
                         key={q.id}
-                        className="p-4 text-sm text-text border-r border-border/30 last:border-0"
+                        className="p-4 text-sm font-semibold text-text whitespace-nowrap border-r border-border/30 last:border-0"
                       >
-                        {res.answers[q.id] || <span className="text-text-muted/30">-</span>}
-                      </td>
+                        {q.title}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border/30">
+                  {data.responses.map((res) => (
+                    <tr key={res.id} className="hover:bg-surface-dim/50 transition-colors">
+                      <td className="p-4 text-sm text-text-muted whitespace-nowrap border-r border-border/30">
+                        {new Date(res.submitted_at).toLocaleString()}
+                      </td>
+                      {data.questions.map((q) => (
+                        <td
+                          key={q.id}
+                          className="p-4 text-sm text-text border-r border-border/30 last:border-0"
+                        >
+                          {res.answers[q.id] || <span className="text-text-muted/30">-</span>}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   )
 }
