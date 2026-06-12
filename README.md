@@ -143,3 +143,136 @@ pnpm --filter sde-intern-task-api cf-typegen
             ├── surveys/$surveyId.responses.tsx # Responses view
             └── s/$surveyId.tsx         # Public survey (no auth)
 ```
+
+---
+
+## API Reference
+
+All routes under `/api/surveys/*` are protected and require a valid session cookie.
+
+### Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/send-code` | Send a 6-digit OTP to an email address |
+| `POST` | `/api/auth/verify` | Verify OTP, create account if new, set session cookie |
+| `POST` | `/api/auth/logout` | Delete session |
+| `GET` | `/api/auth/me` | Get the current authenticated user |
+
+### Surveys
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/surveys` | List all surveys for the current user |
+| `POST` | `/api/surveys` | Create a new survey |
+| `GET` | `/api/surveys/:id` | Get a single survey with questions |
+| `PUT` | `/api/surveys/:id` | Update survey title, theme, or publish status |
+| `DELETE` | `/api/surveys/:id` | Delete a survey and all its data |
+
+### Questions
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/surveys/:id/questions` | Add a question |
+| `PUT` | `/api/surveys/:id/questions/:qid` | Update a question |
+| `DELETE` | `/api/surveys/:id/questions/:qid` | Delete a question |
+| `PUT` | `/api/surveys/:id/questions/reorder` | Reorder all questions |
+
+### Responses
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/surveys/:id/responses` | Get all responses with answers |
+| `GET` | `/api/surveys/:id/responses/export` | Download responses as CSV |
+
+### Public (no auth)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/public/surveys/:id` | Fetch a published survey with questions and theme data |
+| `POST` | `/api/public/surveys/:id/respond` | Submit a response |
+
+---
+
+## Auth Flow
+
+Authentication uses **email OTP (magic code)** — no passwords.
+
+1. User enters their email on the login page.
+2. A 6-digit code is generated and stored in `otp_codes` with a **5 minute expiry**.
+3. In development the code is logged to the `[api]` console output — copy-paste it into the form.
+4. On verification the code is marked `used = 1` (single-use) and a `session` cookie is set with a **7 day TTL**.
+5. All protected API routes are checked by `authMiddleware`, which reads the session cookie and rejects expired or missing sessions with `401`.
+
+> **For production:** swap the `console.log` in `auth.ts` for a real email provider (Resend, AWS SES, etc.). The rest of the flow needs no changes.
+
+---
+
+## Theming
+
+Each survey stores three independent colour values and a font:
+
+| Field | Controls | Default |
+|-------|----------|---------|
+| `brand_color` | Header banner at the top of the survey card | `#4f46e5` |
+| `bg_color` | Background of the entire survey card | `#ffffff` |
+| `page_bg_color` | Full-screen background behind the card | `#f8fafc` |
+| `font_family` | Typography across the entire survey | `Inter` |
+
+The editor shows a **live preview** of the public survey experience — what you see in the editor is pixel-identical to what respondents see. Theme changes are reflected instantly and persisted on "Save Theme".
+
+Available fonts: **Inter**, **Roboto**, **Outfit**, **Playfair Display**.
+
+---
+
+## Question Types
+
+| Type | Key | Notes |
+|------|-----|-------|
+| Short Text | `short_text` | Single-line text input |
+| Long Text | `long_text` | Multi-line textarea |
+| Multiple Choice | `multiple_choice` | Single-select radio buttons |
+| Checkboxes | `checkboxes` | Multi-select checkboxes |
+| Rating | `rating` | 1–5 interactive star rating |
+| Linear Scale | `linear_scale` | Configurable 1–10 slider scale |
+| Date | `date` | Native date picker |
+
+All question types support marking as **required** — required questions are validated before the public survey form can be submitted.
+
+---
+
+## Deployment
+
+The project is designed to run on Cloudflare's edge.
+
+1. **Create a D1 database** in your Cloudflare dashboard and add the binding to `api/wrangler.jsonc`.
+2. **Apply the schema:**
+   ```bash
+   wrangler d1 execute <DB_NAME> --file=api/src/db/schema.sql
+   ```
+3. **Deploy the API:**
+   ```bash
+   pnpm --filter sde-intern-task-api run deploy
+   ```
+4. **Build and deploy the frontend** to Cloudflare Pages (or any static host):
+   ```bash
+   pnpm build
+   ```
+5. Set the `VITE_API_URL` env var on your Pages project to point at your deployed Worker URL if the frontend and API are on different domains.
+
+---
+
+## Contributing
+
+```bash
+git clone <repo>
+pnpm install
+pnpm dev
+```
+
+Before opening a PR:
+
+```bash
+pnpm check:fix   # auto-fix linting and formatting
+pnpm typecheck   # ensure no TypeScript errors
+```
