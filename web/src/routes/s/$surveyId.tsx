@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import { QuestionRenderer } from '../../components/QuestionRenderer'
 import { Spinner } from '../../components/Spinner'
 import { getPublicSurvey, type SurveyWithQuestions, submitSurveyResponse } from '../../lib/api'
@@ -87,7 +88,7 @@ function PublicSurveyPage() {
     if (success) {
       setIsSuccess(true)
     } else {
-      alert('Failed to submit survey. Please try again.')
+      toast.error('Failed to submit survey. Please try again.')
     }
   }
 
@@ -148,7 +149,8 @@ function PublicSurveyPage() {
       style={
         {
           '--color-brand': survey.brand_color,
-          backgroundColor: 'var(--color-brand)',
+          backgroundColor: survey.bg_color,
+          fontFamily: survey.font_family,
         } as React.CSSProperties
       }
     >

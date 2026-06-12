@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { Survey } from '../lib/api'
+import { confirmToast } from '../lib/toastConfirm'
 
 type SurveyCardProps = {
   survey: Survey
@@ -13,7 +14,10 @@ export function SurveyCard({ survey, onDelete }: SurveyCardProps) {
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!confirm('Are you sure you want to delete this survey? This cannot be undone.')) {
+    const confirmed = await confirmToast(
+      'Are you sure you want to delete this survey? This cannot be undone.',
+    )
+    if (!confirmed) {
       return
     }
 

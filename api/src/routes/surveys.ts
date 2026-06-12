@@ -42,14 +42,24 @@ surveys.post('/', async (c) => {
   const title = 'Untitled Survey'
   // Using our new Ocean Blue brand color as default
   const defaultColor = '#3b82f6'
+  const defaultBgColor = '#f9fafb'
+  const defaultFontFamily = 'Inter'
 
   await c.env.DB.prepare(
-    'INSERT INTO surveys (id, user_id, title, brand_color) VALUES (?, ?, ?, ?)',
+    'INSERT INTO surveys (id, user_id, title, brand_color, bg_color, font_family) VALUES (?, ?, ?, ?, ?, ?)',
   )
-    .bind(id, user.id, title, defaultColor)
+    .bind(id, user.id, title, defaultColor, defaultBgColor, defaultFontFamily)
     .run()
 
-  return c.json({ id, title, brand_color: defaultColor, logo_url: '', is_published: 0 })
+  return c.json({
+    id,
+    title,
+    brand_color: defaultColor,
+    bg_color: defaultBgColor,
+    font_family: defaultFontFamily,
+    logo_url: '',
+    is_published: 0,
+  })
 })
 
 // GET /api/surveys/:id
@@ -95,13 +105,15 @@ surveys.put('/:id', async (c) => {
 
   const title = body.title !== undefined ? body.title : existing.title
   const brandColor = body.brand_color !== undefined ? body.brand_color : existing.brand_color
+  const bgColor = body.bg_color !== undefined ? body.bg_color : existing.bg_color
+  const fontFamily = body.font_family !== undefined ? body.font_family : existing.font_family
   const logoUrl = body.logo_url !== undefined ? body.logo_url : existing.logo_url
   const isPublished = body.is_published !== undefined ? body.is_published : existing.is_published
 
   await c.env.DB.prepare(
-    'UPDATE surveys SET title = ?, brand_color = ?, logo_url = ?, is_published = ?, updated_at = datetime("now") WHERE id = ?',
+    'UPDATE surveys SET title = ?, brand_color = ?, bg_color = ?, font_family = ?, logo_url = ?, is_published = ?, updated_at = datetime("now") WHERE id = ?',
   )
-    .bind(title, brandColor, logoUrl, isPublished ? 1 : 0, id)
+    .bind(title, brandColor, bgColor, fontFamily, logoUrl, isPublished ? 1 : 0, id)
     .run()
 
   return c.json({ ok: true })

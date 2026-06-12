@@ -6,7 +6,9 @@ export function useSurveyEditor(
   setSurvey: (s: SurveyWithQuestions) => void,
 ) {
   const [liveTitle, setLiveTitle] = useState('')
-  const [liveBrandColor, setLiveBrandColor] = useState('#5c7556')
+  const [liveBrandColor, setLiveBrandColor] = useState('#3b82f6')
+  const [liveBgColor, setLiveBgColor] = useState('#f9fafb')
+  const [liveFontFamily, setLiveFontFamily] = useState('Inter')
   const [liveLogoUrl, setLiveLogoUrl] = useState('')
   const [isPublishing, setIsPublishing] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
@@ -16,6 +18,8 @@ export function useSurveyEditor(
     if (survey) {
       setLiveTitle(survey.title)
       setLiveBrandColor(survey.brand_color)
+      setLiveBgColor(survey.bg_color)
+      setLiveFontFamily(survey.font_family)
       setLiveLogoUrl(survey.logo_url)
     }
   }, [survey])
@@ -35,7 +39,12 @@ export function useSurveyEditor(
     }
   }
 
-  const handleSaveBranding = async (data: { brand_color: string; logo_url: string }) => {
+  const handleSaveBranding = async (data: {
+    brand_color: string
+    bg_color: string
+    font_family: string
+    logo_url: string
+  }) => {
     if (!survey) return
     const success = await updateSurvey(survey.id, data)
     if (success) {
@@ -59,6 +68,10 @@ export function useSurveyEditor(
     setLiveTitle,
     liveBrandColor,
     setLiveBrandColor,
+    liveBgColor,
+    setLiveBgColor,
+    liveFontFamily,
+    setLiveFontFamily,
     liveLogoUrl,
     setLiveLogoUrl,
     isPublishing,

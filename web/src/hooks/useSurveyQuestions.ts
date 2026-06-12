@@ -15,6 +15,7 @@ import {
   type SurveyWithQuestions,
   updateQuestion,
 } from '../lib/api'
+import { confirmToast } from '../lib/toastConfirm'
 
 export function useSurveyQuestions(
   survey: SurveyWithQuestions | null,
@@ -92,7 +93,8 @@ export function useSurveyQuestions(
 
   const handleDeleteQuestion = async (questionId: string) => {
     if (!survey) return
-    if (!confirm('Are you sure you want to delete this question?')) return
+    const confirmed = await confirmToast('Are you sure you want to delete this question?')
+    if (!confirmed) return
 
     const oldQuestions = [...survey.questions]
     setSurvey({

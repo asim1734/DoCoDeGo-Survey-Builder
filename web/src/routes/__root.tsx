@@ -1,5 +1,6 @@
 import { createRootRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { getCurrentUser, logout as logoutApi } from '../lib/api'
 
 type User = {
@@ -56,6 +57,7 @@ function RootLayout() {
   return (
     <AuthContext value={{ user, loading, refreshUser, logout }}>
       <div className="min-h-screen flex flex-col relative selection:bg-brand-200 selection:text-brand-700">
+        <Toaster position="bottom-right" />
         <nav className="fixed top-0 left-0 right-0 z-50 bg-brand border-b border-brand-600 px-8 py-6 flex items-center justify-between transition-all duration-300 shadow-sm">
           <a
             href="/"

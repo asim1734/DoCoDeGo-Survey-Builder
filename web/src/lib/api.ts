@@ -59,6 +59,8 @@ export type Survey = {
   user_id: string
   title: string
   brand_color: string
+  bg_color: string
+  font_family: string
   logo_url: string
   is_published: number
   created_at: string

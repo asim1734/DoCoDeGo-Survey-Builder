@@ -113,8 +113,12 @@ function EditSurveyPage() {
 
           <BrandingPanel
             brandColor={survey.brand_color}
+            bgColor={survey.bg_color}
+            fontFamily={survey.font_family}
             logoUrl={survey.logo_url}
             onColorChange={editor.setLiveBrandColor}
+            onBgColorChange={editor.setLiveBgColor}
+            onFontFamilyChange={editor.setLiveFontFamily}
             onLogoChange={editor.setLiveLogoUrl}
             onSave={editor.handleSaveBranding}
           />
@@ -141,8 +145,14 @@ function EditSurveyPage() {
           <div className="max-w-2xl mx-auto">
             {/* Survey Render Wrapper */}
             <div
-              className="bg-white rounded-3xl shadow-xl overflow-hidden border border-border/40 transition-all duration-300"
-              style={{ '--color-brand': editor.liveBrandColor } as React.CSSProperties}
+              className="rounded-3xl shadow-xl overflow-hidden border border-border/40 transition-all duration-300"
+              style={
+                {
+                  '--color-brand': editor.liveBrandColor,
+                  backgroundColor: editor.liveBgColor,
+                  fontFamily: editor.liveFontFamily,
+                } as React.CSSProperties
+              }
             >
               {/* Survey Header (Brand Color & Logo) */}
               <div className="h-32 bg-[var(--color-brand)] relative transition-colors duration-300" />
