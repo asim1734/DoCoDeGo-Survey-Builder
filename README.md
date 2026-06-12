@@ -1,18 +1,7 @@
-<p align="center">
-  <a href="https://docodego.com/">
-    <img src=".github/logo.png" alt="DoCoDeGo — Document · Compose · Demonstrate · Govern — an open framework for teams accountable for what AI produces in their name" width="500" />
-  </a>
-</p>
-
 # Branded Survey Builder
 
-A full-stack survey creation platform built for the DoCoDeGo SDE Intern take-home. Think a minimal Typeform / Tally clone — create surveys, brand them, share a public URL, and view responses.
+A full-stack survey creation platform. Create surveys, brand them with your own visual identity, share a public URL, and view responses — no third-party tools required.
 
-## Live Demo
-
-> Create a survey → brand it → share the link → view responses. No sign-in required to respond.
-
----
 
 ## Features
 
