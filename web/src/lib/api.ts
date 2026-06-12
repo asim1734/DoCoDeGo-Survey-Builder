@@ -63,6 +63,8 @@ export type Survey = {
   is_published: number
   created_at: string
   updated_at: string
+  question_count?: number
+  response_count?: number
 }
 
 export type Question = {

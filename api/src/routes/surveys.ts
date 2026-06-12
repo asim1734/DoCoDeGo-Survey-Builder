@@ -21,7 +21,13 @@ const surveys = new Hono<SurveysEnv>()
 surveys.get('/', async (c) => {
   const user = c.get('user')
   const { results } = await c.env.DB.prepare(
-    'SELECT * FROM surveys WHERE user_id = ? ORDER BY created_at DESC',
+    `SELECT 
+      s.*,
+      (SELECT COUNT(*) FROM questions q WHERE q.survey_id = s.id) as question_count,
+      (SELECT COUNT(*) FROM responses r WHERE r.survey_id = s.id) as response_count
+     FROM surveys s 
+     WHERE s.user_id = ? 
+     ORDER BY s.created_at DESC`,
   )
     .bind(user.id)
     .all()

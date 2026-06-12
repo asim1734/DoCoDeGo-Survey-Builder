@@ -1,6 +1,9 @@
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
+  -- NOTE: The 'name' column was added after initial schema creation.
+  -- If your local DB is missing this column, run the migration in api/src/db/migrations/0001_add_name_to_users.sql
+  -- or drop and recreate your local database.
   name TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

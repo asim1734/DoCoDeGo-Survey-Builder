@@ -9,6 +9,7 @@ export function useSurveyEditor(
   const [liveBrandColor, setLiveBrandColor] = useState('#5c7556')
   const [liveLogoUrl, setLiveLogoUrl] = useState('')
   const [isPublishing, setIsPublishing] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
   // Sync state when survey loads
   useEffect(() => {
@@ -21,11 +22,16 @@ export function useSurveyEditor(
 
   const handleTitleBlur = async () => {
     if (!survey || liveTitle === survey.title) return
+    setSaveStatus('saving')
     const success = await updateSurvey(survey.id, { title: liveTitle })
     if (success) {
       setSurvey({ ...survey, title: liveTitle })
+      setSaveStatus('saved')
+      setTimeout(() => setSaveStatus('idle'), 2000)
     } else {
       setLiveTitle(survey.title) // revert on failure
+      setSaveStatus('error')
+      setTimeout(() => setSaveStatus('idle'), 2000)
     }
   }
 
@@ -56,6 +62,7 @@ export function useSurveyEditor(
     liveLogoUrl,
     setLiveLogoUrl,
     isPublishing,
+    saveStatus,
     handleTitleBlur,
     handleSaveBranding,
     handleTogglePublish,

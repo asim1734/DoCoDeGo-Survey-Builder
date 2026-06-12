@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { sendOtpCode, verifyOtpCode } from '../lib/api'
 import { useAuth } from './__root'
 
@@ -16,7 +16,13 @@ function LoginPage() {
   const [error, setError] = useState('')
   const [sending, setSending] = useState(false)
   const navigate = useNavigate()
-  const { refreshUser } = useAuth()
+  const { user, loading, refreshUser } = useAuth()
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate({ to: '/dashboard' })
+    }
+  }, [user, loading, navigate])
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault()

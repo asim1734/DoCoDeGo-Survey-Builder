@@ -1,11 +1,21 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Spinner } from '../components/Spinner'
 import { SurveyCard } from '../components/SurveyCard'
-import { createSurvey, deleteSurvey, getSurveys, type Survey } from '../lib/api'
+import { createSurvey, deleteSurvey, getCurrentUser, getSurveys, type Survey } from '../lib/api'
 import { useAuth } from './__root'
 
 export const Route = createFileRoute('/dashboard')({
+  beforeLoad: async () => {
+    try {
+      const user = await getCurrentUser()
+      if (!user) {
+        throw redirect({ to: '/login' })
+      }
+    } catch {
+      throw redirect({ to: '/login' })
+    }
+  },
   component: DashboardPage,
 })
 

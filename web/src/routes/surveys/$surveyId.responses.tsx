@@ -1,10 +1,21 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { ResponsesTable } from '../../components/editor/ResponsesTable'
 import { Spinner } from '../../components/Spinner'
 import { useSurveyResponses } from '../../hooks/useSurveyResponses'
+import { getCurrentUser } from '../../lib/api'
 import { useAuth } from '../__root'
 
 export const Route = createFileRoute('/surveys/$surveyId/responses')({
+  beforeLoad: async () => {
+    try {
+      const user = await getCurrentUser()
+      if (!user) {
+        throw redirect({ to: '/login' })
+      }
+    } catch {
+      throw redirect({ to: '/login' })
+    }
+  },
   component: ResponsesPage,
 })
 

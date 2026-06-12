@@ -3,7 +3,7 @@ import { getSurvey, type SurveyWithQuestions } from '../lib/api'
 import { useAuth } from '../routes/__root'
 
 export function useSurvey(surveyId: string) {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [survey, setSurvey] = useState<SurveyWithQuestions | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -15,10 +15,13 @@ export function useSurvey(surveyId: string) {
       }
       setLoading(false)
     }
+
     if (user) {
       fetchIt()
+    } else if (!authLoading) {
+      setLoading(false)
     }
-  }, [surveyId, user])
+  }, [surveyId, user, authLoading])
 
   return { survey, setSurvey, loading, user }
 }

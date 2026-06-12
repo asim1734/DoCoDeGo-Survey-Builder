@@ -24,10 +24,17 @@ function PublicSurveyPage() {
       const data = await getPublicSurvey(surveyId)
       if (data) {
         setSurvey(data)
+        document.title = data.title
+      } else {
+        document.title = 'Survey Not Found'
       }
       setLoading(false)
     }
     fetchIt()
+
+    return () => {
+      document.title = 'Survey Builder'
+    }
   }, [surveyId])
 
   const handleAnswerChange = (questionId: string, value: string) => {

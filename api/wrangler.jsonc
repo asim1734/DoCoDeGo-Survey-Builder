@@ -8,5 +8,9 @@
     "enabled": true
   },
 
+  // NOTE: "database_id" is set to "local" for local development.
+  // To deploy to Cloudflare:
+  // 1. Run `npx wrangler d1 create survey-builder`
+  // 2. Replace the "database_id" below with the UUID from the command output.
   "d1_databases": [{ "binding": "DB", "database_name": "survey-builder", "database_id": "local" }]
 }
