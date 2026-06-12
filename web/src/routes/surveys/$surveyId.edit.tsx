@@ -114,10 +114,12 @@ function EditSurveyPage() {
           <BrandingPanel
             brandColor={survey.brand_color}
             bgColor={survey.bg_color}
+            pageBgColor={survey.page_bg_color}
             fontFamily={survey.font_family}
             logoUrl={survey.logo_url}
             onColorChange={editor.setLiveBrandColor}
             onBgColorChange={editor.setLiveBgColor}
+            onPageBgColorChange={editor.setLivePageBgColor}
             onFontFamilyChange={editor.setLiveFontFamily}
             onLogoChange={editor.setLiveLogoUrl}
             onSave={editor.handleSaveBranding}
@@ -140,9 +142,15 @@ function EditSurveyPage() {
 
         {/* Right Panel: Live Preview/Editor */}
         <div
-          className={`flex-1 p-3 lg:p-6 lg:pt-4 overflow-y-auto flex-col ${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex`}
+          className={`flex-1 p-3 lg:p-6 lg:pt-4 overflow-y-auto flex-col ${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex transition-colors duration-500`}
+          style={
+            {
+              backgroundColor: editor.livePageBgColor,
+              fontFamily: editor.liveFontFamily,
+            } as React.CSSProperties
+          }
         >
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto w-full">
             {/* Survey Render Wrapper */}
             <div
               className="rounded-3xl shadow-xl overflow-hidden border border-border/40 transition-all duration-300"
@@ -150,7 +158,6 @@ function EditSurveyPage() {
                 {
                   '--color-brand': editor.liveBrandColor,
                   backgroundColor: editor.liveBgColor,
-                  fontFamily: editor.liveFontFamily,
                 } as React.CSSProperties
               }
             >
@@ -173,13 +180,17 @@ function EditSurveyPage() {
                 )}
 
                 <div className="relative mb-4">
-                  <input
-                    type="text"
+                  <textarea
                     value={editor.liveTitle}
-                    onChange={(e) => editor.setLiveTitle(e.target.value)}
+                    onChange={(e) => {
+                      e.target.style.height = 'auto'
+                      e.target.style.height = `${e.target.scrollHeight}px`
+                      editor.setLiveTitle(e.target.value)
+                    }}
                     onBlur={editor.handleTitleBlur}
-                    className="w-full text-4xl font-extrabold text-text bg-transparent border-0 border-b-2 border-transparent hover:border-border/50 focus:border-brand focus:outline-none focus:ring-0 px-0 pb-1 transition-colors"
+                    className="w-full text-4xl font-extrabold text-text bg-transparent border-0 border-b-2 border-transparent hover:border-border/50 focus:border-brand focus:outline-none focus:ring-0 py-3 transition-colors resize-none overflow-hidden leading-tight"
                     placeholder="Survey Title"
+                    rows={1}
                   />
                   {editor.saveStatus === 'saving' && (
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm font-medium text-text-muted animate-pulse bg-white/80 px-2 rounded">

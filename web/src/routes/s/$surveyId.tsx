@@ -117,7 +117,13 @@ function PublicSurveyPage() {
     return (
       <div
         className="flex items-center justify-center min-h-screen transition-colors duration-500"
-        style={{ backgroundColor: survey.brand_color }}
+        style={
+          {
+            '--color-brand': survey.brand_color || '#4f46e5',
+            backgroundColor: survey.page_bg_color || '#f8fafc',
+            fontFamily: survey.font_family || 'Inter',
+          } as React.CSSProperties
+        }
       >
         <div className="bg-white p-12 rounded-3xl shadow-xl max-w-md w-full text-center mx-4">
           <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -139,25 +145,42 @@ function PublicSurveyPage() {
           <h1 className="text-3xl font-extrabold text-text mb-2">Thank you!</h1>
           <p className="text-text-muted">Your response has been recorded.</p>
         </div>
+
+        {/* Subtle Branding */}
+        <div className="fixed bottom-4 right-6 pointer-events-none opacity-40 hover:opacity-100 transition-opacity duration-300 flex items-center gap-2">
+          <span className="text-xs font-medium text-text drop-shadow-sm">
+            Built using <strong>Survey Builder</strong>
+          </span>
+        </div>
       </div>
     )
   }
 
   return (
     <div
-      className="min-h-screen pb-24 transition-colors duration-500"
+      className="min-h-screen pb-24 transition-colors duration-500 relative"
       style={
         {
-          '--color-brand': survey.brand_color,
-          backgroundColor: survey.bg_color,
-          fontFamily: survey.font_family,
+          '--color-brand': survey.brand_color || '#4f46e5',
+          backgroundColor: survey.page_bg_color || '#f8fafc',
+          fontFamily: survey.font_family || 'Inter',
         } as React.CSSProperties
       }
     >
-      <div className="max-w-2xl mx-auto pt-12 lg:pt-24 px-4">
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <div className="max-w-2xl mx-auto pt-12 lg:pt-24 px-4 w-full">
+        <div
+          className="rounded-3xl shadow-2xl overflow-hidden"
+          style={
+            {
+              backgroundColor: survey.bg_color || '#ffffff',
+            } as React.CSSProperties
+          }
+        >
+          {/* Survey Header (Brand Color) */}
+          <div className="h-32 bg-[var(--color-brand)] relative transition-colors duration-300" />
+
           {/* Header */}
-          <div className="px-8 pb-12 pt-12 relative border-b border-border/40">
+          <div className="px-8 pb-12 pt-8 relative -mt-16 border-b border-border/40">
             {survey.logo_url && (
               <div className="w-20 h-20 bg-white rounded-2xl p-2 shadow-soft mb-8 border border-border/50">
                 <img
@@ -171,7 +194,7 @@ function PublicSurveyPage() {
           </div>
 
           {/* Form Content */}
-          <div className="px-8 py-10 bg-surface/30">
+          <div className="px-8 py-10">
             <div className="space-y-8">
               {survey.questions.map((question) => (
                 <QuestionRenderer
@@ -196,6 +219,13 @@ function PublicSurveyPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Subtle Branding */}
+      <div className="fixed bottom-4 right-6 pointer-events-none opacity-40 hover:opacity-100 transition-opacity duration-300 flex items-center gap-2">
+        <span className="text-xs font-medium text-text drop-shadow-sm">
+          Powered by <strong>Survey Builder</strong>
+        </span>
       </div>
     </div>
   )

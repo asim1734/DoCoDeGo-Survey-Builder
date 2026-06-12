@@ -1,26 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { type SurveyWithQuestions, updateSurvey } from '../lib/api'
 
 export function useSurveyEditor(
   survey: SurveyWithQuestions | null,
   setSurvey: (s: SurveyWithQuestions) => void,
 ) {
-  const [liveTitle, setLiveTitle] = useState('')
-  const [liveBrandColor, setLiveBrandColor] = useState('#3b82f6')
-  const [liveBgColor, setLiveBgColor] = useState('#f9fafb')
-  const [liveFontFamily, setLiveFontFamily] = useState('Inter')
-  const [liveLogoUrl, setLiveLogoUrl] = useState('')
+  const [liveTitle, setLiveTitle] = useState(survey?.title || '')
+  const [liveBrandColor, setLiveBrandColor] = useState(survey?.brand_color || '#4f46e5')
+  const [liveBgColor, setLiveBgColor] = useState(survey?.bg_color || '#ffffff')
+  const [livePageBgColor, setLivePageBgColor] = useState(survey?.page_bg_color || '#f8fafc')
+  const [liveFontFamily, setLiveFontFamily] = useState(survey?.font_family || 'Inter')
+  const [liveLogoUrl, setLiveLogoUrl] = useState(survey?.logo_url || '')
+
   const [isPublishing, setIsPublishing] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const initializedSurveyId = useRef<string | null>(null)
 
-  // Sync state when survey loads
+  // Sync state when survey loads (only once per survey ID)
   useEffect(() => {
-    if (survey) {
-      setLiveTitle(survey.title)
-      setLiveBrandColor(survey.brand_color)
-      setLiveBgColor(survey.bg_color)
-      setLiveFontFamily(survey.font_family)
-      setLiveLogoUrl(survey.logo_url)
+    if (survey && initializedSurveyId.current !== survey.id) {
+      setLiveTitle(survey.title || '')
+      setLiveBrandColor(survey.brand_color || '#4f46e5')
+      setLiveBgColor(survey.bg_color || '#ffffff')
+      setLivePageBgColor(survey.page_bg_color || '#f8fafc')
+      setLiveFontFamily(survey.font_family || 'Inter')
+      setLiveLogoUrl(survey.logo_url || '')
+
+      initializedSurveyId.current = survey.id
     }
   }, [survey])
 
@@ -39,16 +45,30 @@ export function useSurveyEditor(
     }
   }
 
-  const handleSaveBranding = async (data: {
-    brand_color: string
-    bg_color: string
-    font_family: string
-    logo_url: string
-  }) => {
+  const handleSaveBranding = async () => {
     if (!survey) return
-    const success = await updateSurvey(survey.id, data)
+    setSaveStatus('saving')
+    const success = await updateSurvey(survey.id, {
+      brand_color: liveBrandColor,
+      bg_color: liveBgColor,
+      page_bg_color: livePageBgColor,
+      font_family: liveFontFamily,
+      logo_url: liveLogoUrl,
+    })
     if (success) {
-      setSurvey({ ...survey, ...data })
+      setSurvey({
+        ...survey,
+        brand_color: liveBrandColor,
+        bg_color: liveBgColor,
+        page_bg_color: livePageBgColor,
+        font_family: liveFontFamily,
+        logo_url: liveLogoUrl,
+      })
+      setSaveStatus('saved')
+      setTimeout(() => setSaveStatus('idle'), 2000)
+    } else {
+      setSaveStatus('error')
+      setTimeout(() => setSaveStatus('idle'), 2000)
     }
   }
 
@@ -70,6 +90,8 @@ export function useSurveyEditor(
     setLiveBrandColor,
     liveBgColor,
     setLiveBgColor,
+    livePageBgColor,
+    setLivePageBgColor,
     liveFontFamily,
     setLiveFontFamily,
     liveLogoUrl,

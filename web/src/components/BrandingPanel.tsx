@@ -10,15 +10,18 @@ const FONT_OPTIONS = [
 type BrandingPanelProps = {
   brandColor: string
   bgColor: string
+  pageBgColor: string
   fontFamily: string
   logoUrl: string
   onColorChange: (color: string) => void
   onBgColorChange: (color: string) => void
+  onPageBgColorChange: (color: string) => void
   onFontFamilyChange: (font: string) => void
   onLogoChange: (url: string) => void
   onSave: (data: {
     brand_color: string
     bg_color: string
+    page_bg_color: string
     font_family: string
     logo_url: string
   }) => Promise<void>
@@ -27,10 +30,12 @@ type BrandingPanelProps = {
 export function BrandingPanel({
   brandColor,
   bgColor,
+  pageBgColor,
   fontFamily,
   logoUrl,
   onColorChange,
   onBgColorChange,
+  onPageBgColorChange,
   onFontFamilyChange,
   onLogoChange,
   onSave,
@@ -38,6 +43,7 @@ export function BrandingPanel({
   const [isSaving, setIsSaving] = useState(false)
   const [localColor, setLocalColor] = useState(brandColor)
   const [localBgColor, setLocalBgColor] = useState(bgColor)
+  const [localPageBgColor, setLocalPageBgColor] = useState(pageBgColor)
   const [localFontFamily, setLocalFontFamily] = useState(fontFamily)
   const [localLogo, setLocalLogo] = useState(logoUrl)
 
@@ -46,6 +52,7 @@ export function BrandingPanel({
     await onSave({
       brand_color: localColor,
       bg_color: localBgColor,
+      page_bg_color: localPageBgColor,
       font_family: localFontFamily,
       logo_url: localLogo,
     })
@@ -55,6 +62,7 @@ export function BrandingPanel({
   const hasChanges =
     localColor !== brandColor ||
     localBgColor !== bgColor ||
+    localPageBgColor !== pageBgColor ||
     localFontFamily !== fontFamily ||
     localLogo !== logoUrl
 
@@ -93,7 +101,7 @@ export function BrandingPanel({
 
         <div>
           <label htmlFor="bgColor" className="block text-sm font-medium text-text-muted mb-1.5">
-            Background Color
+            Card Background Color
           </label>
           <div className="flex items-center gap-3">
             <input
@@ -114,7 +122,35 @@ export function BrandingPanel({
                 onBgColorChange(e.target.value)
               }}
               className="flex-1 px-3 py-2 border border-border/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand font-mono text-sm"
-              placeholder="#f9fafb"
+              placeholder="#ffffff"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="pageBgColor" className="block text-sm font-medium text-text-muted mb-1.5">
+            Page Background Color
+          </label>
+          <div className="flex items-center gap-3">
+            <input
+              type="color"
+              id="pageBgColor"
+              value={localPageBgColor}
+              onChange={(e) => {
+                setLocalPageBgColor(e.target.value)
+                onPageBgColorChange(e.target.value)
+              }}
+              className="w-10 h-10 rounded cursor-pointer border-0 p-0 appearance-none bg-transparent"
+            />
+            <input
+              type="text"
+              value={localPageBgColor}
+              onChange={(e) => {
+                setLocalPageBgColor(e.target.value)
+                onPageBgColorChange(e.target.value)
+              }}
+              className="flex-1 px-3 py-2 border border-border/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand font-mono text-sm"
+              placeholder="#f8fafc"
             />
           </div>
         </div>

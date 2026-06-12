@@ -43,12 +43,13 @@ surveys.post('/', async (c) => {
   // Using our new Ocean Blue brand color as default
   const defaultColor = '#3b82f6'
   const defaultBgColor = '#f9fafb'
+  const defaultPageBgColor = '#f8fafc'
   const defaultFontFamily = 'Inter'
 
   await c.env.DB.prepare(
-    'INSERT INTO surveys (id, user_id, title, brand_color, bg_color, font_family) VALUES (?, ?, ?, ?, ?, ?)',
+    'INSERT INTO surveys (id, user_id, title, brand_color, bg_color, page_bg_color, font_family) VALUES (?, ?, ?, ?, ?, ?, ?)',
   )
-    .bind(id, user.id, title, defaultColor, defaultBgColor, defaultFontFamily)
+    .bind(id, user.id, title, defaultColor, defaultBgColor, defaultPageBgColor, defaultFontFamily)
     .run()
 
   return c.json({
@@ -56,6 +57,7 @@ surveys.post('/', async (c) => {
     title,
     brand_color: defaultColor,
     bg_color: defaultBgColor,
+    page_bg_color: defaultPageBgColor,
     font_family: defaultFontFamily,
     logo_url: '',
     is_published: 0,
@@ -106,14 +108,15 @@ surveys.put('/:id', async (c) => {
   const title = body.title !== undefined ? body.title : existing.title
   const brandColor = body.brand_color !== undefined ? body.brand_color : existing.brand_color
   const bgColor = body.bg_color !== undefined ? body.bg_color : existing.bg_color
+  const pageBgColor = body.page_bg_color !== undefined ? body.page_bg_color : existing.page_bg_color
   const fontFamily = body.font_family !== undefined ? body.font_family : existing.font_family
   const logoUrl = body.logo_url !== undefined ? body.logo_url : existing.logo_url
   const isPublished = body.is_published !== undefined ? body.is_published : existing.is_published
 
   await c.env.DB.prepare(
-    'UPDATE surveys SET title = ?, brand_color = ?, bg_color = ?, font_family = ?, logo_url = ?, is_published = ?, updated_at = datetime("now") WHERE id = ?',
+    'UPDATE surveys SET title = ?, brand_color = ?, bg_color = ?, page_bg_color = ?, font_family = ?, logo_url = ?, is_published = ?, updated_at = datetime("now") WHERE id = ?',
   )
-    .bind(title, brandColor, bgColor, fontFamily, logoUrl, isPublished ? 1 : 0, id)
+    .bind(title, brandColor, bgColor, pageBgColor, fontFamily, logoUrl, isPublished ? 1 : 0, id)
     .run()
 
   return c.json({ ok: true })

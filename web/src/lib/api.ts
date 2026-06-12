@@ -60,6 +60,7 @@ export type Survey = {
   title: string
   brand_color: string
   bg_color: string
+  page_bg_color: string
   font_family: string
   logo_url: string
   is_published: number
@@ -103,7 +104,15 @@ export async function createSurvey(): Promise<Survey | null> {
 
 export async function updateSurvey(
   id: string,
-  data: Partial<{ title: string; brand_color: string; logo_url: string; is_published: boolean }>,
+  data: Partial<{
+    title: string
+    brand_color: string
+    bg_color: string
+    page_bg_color: string
+    font_family: string
+    logo_url: string
+    is_published: boolean
+  }>,
 ): Promise<boolean> {
   const response = await fetch(`/api/surveys/${id}`, {
     method: 'PUT',

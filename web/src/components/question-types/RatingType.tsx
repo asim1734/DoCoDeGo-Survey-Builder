@@ -7,7 +7,7 @@ export function RatingEditor() {
         <svg
           aria-hidden="true"
           key={star}
-          className="w-10 h-10 text-border/80 hover:text-brand cursor-pointer transition-colors"
+          className="w-10 h-10 text-slate-300 hover:text-brand cursor-pointer transition-colors"
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -36,7 +36,7 @@ export function RatingRenderer({ value, onChange }: RendererProps) {
           className={`w-12 h-12 flex items-center justify-center transition-colors focus:outline-none ${
             Number.parseInt(value || '0', 10) >= star
               ? 'text-yellow-400'
-              : 'text-border/80 hover:text-yellow-400/50'
+              : 'text-slate-300 hover:text-yellow-300'
           }`}
         >
           <svg aria-hidden="true" className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">

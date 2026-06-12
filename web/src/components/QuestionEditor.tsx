@@ -82,7 +82,11 @@ export function QuestionEditor({ question, onChange, onDelete }: QuestionEditorP
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative bg-white border border-border/40 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all"
+      className={`group relative bg-white rounded-2xl p-6 transition-all ${
+        isDragging
+          ? 'opacity-50 scale-[1.02] shadow-xl z-50 border-2 border-brand'
+          : 'border border-border/40 shadow-sm hover:shadow-md'
+      }`}
     >
       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
         <button

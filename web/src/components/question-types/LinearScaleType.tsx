@@ -19,7 +19,7 @@ export function LinearScaleEditor({ question, handleUpdateOption }: LinearScaleE
           type="text"
           defaultValue={question.options[0] || '1'}
           onBlur={(e) => handleUpdateOption(0, e.target.value)}
-          className="w-full bg-white border border-border/50 hover:border-brand focus:border-brand focus:outline-none focus:ring-0 px-3 py-2 rounded-lg text-sm"
+          className="w-full bg-white border border-slate-300 hover:border-brand focus:border-brand focus:outline-none focus:ring-0 px-3 py-2 rounded-lg text-sm"
           placeholder="e.g. 1"
         />
       </div>
@@ -35,7 +35,7 @@ export function LinearScaleEditor({ question, handleUpdateOption }: LinearScaleE
           type="text"
           defaultValue={question.options[1] || '5'}
           onBlur={(e) => handleUpdateOption(1, e.target.value)}
-          className="w-full bg-white border border-border/50 hover:border-brand focus:border-brand focus:outline-none focus:ring-0 px-3 py-2 rounded-lg text-sm"
+          className="w-full bg-white border border-slate-300 hover:border-brand focus:border-brand focus:outline-none focus:ring-0 px-3 py-2 rounded-lg text-sm"
           placeholder="e.g. 5"
         />
       </div>
@@ -61,7 +61,7 @@ export function LinearScaleRenderer({ question, value, onChange }: RendererProps
         step="1"
         value={value || question.options[0] || '1'}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-2 bg-border/50 rounded-lg appearance-none cursor-pointer accent-brand hover:accent-brand-dark transition-all"
+        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand hover:accent-brand-dark transition-all"
       />
       <div className="flex justify-between items-center text-sm font-bold text-text-muted">
         <span>{question.options[0] || '1'}</span>

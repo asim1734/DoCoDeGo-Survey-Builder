@@ -37,7 +37,7 @@ export function ChoiceEditor({
           <input
             type={question.type === 'checkboxes' ? 'checkbox' : 'radio'}
             disabled
-            className={`w-5 h-5 text-brand border-2 border-border/80 ${question.type === 'checkboxes' ? 'rounded' : ''}`}
+            className={`w-5 h-5 text-brand border-2 border-slate-300 ${question.type === 'checkboxes' ? 'rounded' : ''}`}
           />
           <input
             type="text"
@@ -117,7 +117,7 @@ export function MultipleChoiceRenderer({ question, value, onChange }: RendererPr
             value={opt}
             checked={value === opt}
             onChange={(e) => onChange(e.target.value)}
-            className="w-5 h-5 text-brand border-2 border-border/80 focus:ring-brand cursor-pointer"
+            className="w-5 h-5 text-brand border-2 border-slate-300 focus:ring-brand cursor-pointer"
           />
           <span className="text-text">{opt}</span>
         </label>
@@ -153,7 +153,7 @@ export function CheckboxesRenderer({ question, value, onChange }: RendererProps)
                 else newVals = newVals.filter((v) => v !== opt)
                 onChange(JSON.stringify(newVals))
               }}
-              className="w-5 h-5 rounded text-brand border-2 border-border/80 focus:ring-brand cursor-pointer"
+              className="w-5 h-5 rounded text-brand border-2 border-slate-300 focus:ring-brand cursor-pointer"
             />
             <span className="text-text">{opt}</span>
           </label>
@@ -172,7 +172,7 @@ export function DropdownRenderer({ question, value, onChange, error }: RendererP
         className={`w-full appearance-none px-4 py-3 bg-surface-dim border rounded-xl text-text text-sm focus:outline-none focus:ring-2 transition-all cursor-pointer ${
           error
             ? 'border-danger/50 focus:ring-danger/50'
-            : 'border-border/50 focus:border-brand focus:ring-brand/20'
+            : 'border-slate-300 focus:border-brand focus:ring-brand/20'
         }`}
       >
         <option value="" disabled>
